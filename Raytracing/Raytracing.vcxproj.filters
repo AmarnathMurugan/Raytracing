@@ -26,5 +26,11 @@
     <ClInclude Include="src\Headers\Ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Headers\Hitable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Headers\Sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

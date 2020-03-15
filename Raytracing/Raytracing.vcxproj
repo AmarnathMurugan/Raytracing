@@ -133,7 +133,9 @@
     <ClCompile Include="src\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Headers\Hitable.h" />
     <ClInclude Include="src\Headers\Ray.h" />
+    <ClInclude Include="src\Headers\Sphere.h" />
     <ClInclude Include="src\Headers\Vector3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
