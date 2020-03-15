@@ -101,7 +101,7 @@
 		return (this->x()*v2.x() + this->y()*v2.y() + this->z()*v2.z());
 	}
 
-	inline double  dot(const Vector3 & v1, const Vector3 & v2)  
+	inline double  DotProduct(const Vector3 & v1, const Vector3 & v2)  
 	{
 		return (v1.x()*v2.x() + v1.y()*v2.y() + v1.z()*v2.z());
 	}
