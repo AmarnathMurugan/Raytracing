@@ -3,7 +3,7 @@
 	
 	#include "Hitable.h"	
 
-	class HitableList : Hitable
+	class HitableList : public Hitable
 	{
 	public:
 		HitableList();

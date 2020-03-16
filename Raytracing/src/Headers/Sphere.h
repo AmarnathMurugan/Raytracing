@@ -3,7 +3,7 @@
 
 #include "Hitable.h"
 
-	class Sphere : Hitable
+	class Sphere : public Hitable
 	{
 	public:
 		Vector3 Center;
