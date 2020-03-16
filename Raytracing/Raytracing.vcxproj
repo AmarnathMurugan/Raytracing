@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Headers\Hitable.h" />
+    <ClInclude Include="src\Headers\Hitable_list.h" />
     <ClInclude Include="src\Headers\Ray.h" />
     <ClInclude Include="src\Headers\Sphere.h" />
     <ClInclude Include="src\Headers\Vector3.h" />
