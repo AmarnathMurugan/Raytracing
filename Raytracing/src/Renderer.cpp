@@ -1,22 +1,19 @@
 
 #include "Headers/Hitable_list.h"
 #include "Headers/Sphere.h"
-
+#include "Headers/Camera.h"
+#include <stdlib.h>
 Vector3 ColorAtRay(const Ray& ray, HitableList& world ,HitRecord& hitRecord);
  
 
 int main()
 {
-	std::cout << "P3\n";
 	int Width = 200;
 	int Height = 100;
+	int Samples = 100;
+	std::cout << "P3\n";
 	std::cout << Width << " " << Height << "\n255\n";
-
-	Vector3 LowerLeftCorner(-2, -1, -1);
-	Vector3 Horizontal(4, 0, 0);
-	Vector3 Vertical(0, 2, 0);
-	Vector3 Origin(0, 0, 0);
-
+	Camera cam;	
 	Hitable* ModelArrays[2];
 	ModelArrays[0] = new Sphere(Vector3(0, 0, -1), 0.5);
 	ModelArrays[1] = new Sphere(Vector3(0, -100.5, -1), 100);
@@ -26,10 +23,14 @@ int main()
 	{
 		for (int x = 0; x < Width; x++)
 		{
-			float U = x / (float)Width;
-			float V = y / (float)Height;
-			Ray ray(Origin, LowerLeftCorner + U*Horizontal + V * Vertical);
-			Vector3 color = ColorAtRay(ray,World, hitRecord);
+			Vector3 color;
+			for (int s = 0; s < Samples; s++)
+			{
+				float U = (x) / (float)Width;
+				float V = (y) / (float)Height;
+				Ray ray = cam.GetRayAtUV(U, V);
+				color = ColorAtRay(ray, World, hitRecord);
+			}
 			int r = (int)(255.99 * color.r());
 			int g = (int)(255.99 * color.g());
 			int b = (int)(255.99 * color.b());
