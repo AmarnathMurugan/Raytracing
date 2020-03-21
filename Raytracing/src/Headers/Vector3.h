@@ -10,7 +10,7 @@
 
 			Vector3();
 			Vector3(double x, double y, double z);
-			 
+			inline void SetValues(double x, double y, double z);
 
 			inline double x() const { return values[0]; }
 			inline double y() const { return values[1]; }
@@ -26,8 +26,6 @@
 
 			inline Vector3& operator +=(const Vector3& v2);
 			inline Vector3& operator -=(const Vector3& v2);
-			//inline Vector3& operator *=(const Vector3& v2);
-			//inline Vector3& operator /=(const Vector3& v2);
 			inline Vector3& operator *=(const float t);
 			inline Vector3& operator /=(const float t);
 
@@ -62,6 +60,13 @@
 	}
 
 	Vector3::Vector3(double x, double y, double z)
+	{
+		values[0] = x;
+		values[1] = y;
+		values[2] = z;
+	}
+
+	inline void Vector3::SetValues(double x, double y, double z)
 	{
 		values[0] = x;
 		values[1] = y;

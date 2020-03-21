@@ -20,10 +20,10 @@
 
 	Camera::Camera()
 	{
-		Vector3 LowerLeftCorner(-2, -1, -1);
-		Vector3 Horizontal(4, 0, 0);
-		Vector3 Vertical(0, 2, 0);
-		Vector3 Origin(0, 0, 0);
+		LowerLeftCorner.SetValues(-2, -1, -1);
+		Horizontal.SetValues(4, 0, 0);
+		Vertical.SetValues(0, 2, 0);
+		Origin.SetValues(0, 0, 0);
 	}
 
 	inline Ray Camera::GetRayAtUV(float U, float V)
