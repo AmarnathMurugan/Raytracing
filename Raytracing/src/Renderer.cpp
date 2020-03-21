@@ -2,12 +2,13 @@
 #include "Headers/Hitable_list.h"
 #include "Headers/Sphere.h"
 #include "Headers/Camera.h"
-#include <stdlib.h>
+#include <time.h>
 Vector3 ColorAtRay(const Ray& ray, HitableList& world ,HitRecord& hitRecord);
  
 
 int main()
 {
+	srand((unsigned)time(0));
 	int Width = 200;
 	int Height = 100;
 	int Samples = 100;
@@ -23,24 +24,24 @@ int main()
 	{
 		for (int x = 0; x < Width; x++)
 		{
-			Vector3 color;
+			Vector3 color(0,0,0);
 			for (int s = 0; s < Samples; s++)
 			{
-				float U = (x) / (float)Width;
-				float V = (y) / (float)Height;
+				float U = (x + ((float)rand() / RAND_MAX)) / (float)Width;
+				float V = (y + ((float)rand() / RAND_MAX)) / (float)Height;
 				Ray ray = cam.GetRayAtUV(U, V);
-				color = ColorAtRay(ray, World, hitRecord);
+				color += ColorAtRay(ray, World, hitRecord);
 			}
+			color /= (double)Samples;
 			int r = (int)(255.99 * color.r());
 			int g = (int)(255.99 * color.g());
 			int b = (int)(255.99 * color.b());
-			std::cout << r << " " << g << " " << b<<"  ";
-			 
+			std::cout << r << " " << g << " " << b<<"  ";			 
 		}
 		std::cout << std::endl;
 	}
 
-
+  
 	std::cin.get();
 }
 
