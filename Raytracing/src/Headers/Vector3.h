@@ -34,10 +34,8 @@
 			inline Vector3 normalized() const;
 			inline void normalize();
 
-			inline double dot(const Vector3& v2) const;
-		 
-			inline Vector3 Cross(const Vector3& v2) const;
-			 
+			inline double dot(const Vector3& v2) const;		 
+			inline Vector3 Cross(const Vector3& v2) const;		 
 
 
 

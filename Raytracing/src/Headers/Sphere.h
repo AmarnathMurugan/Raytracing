@@ -37,7 +37,7 @@
 		if (Discriminant > 0)
 		{
 			double temp = (-B - sqrt(Discriminant)) / A;
-			if (t_min <= temp && temp <= t_max)
+			if (t_min < temp && temp < t_max)
 			{
 				hitRecord.t = temp;
 				hitRecord.HitPoint = ray.Point_On_Ray(temp);
@@ -45,7 +45,7 @@
 				return true;
 			}
 			temp = (-B + sqrt(Discriminant)) / A;
-			if (t_min <= temp && temp <= t_max)
+			if (t_min < temp && temp < t_max)
 			{
 				hitRecord.t = temp;
 				hitRecord.HitPoint = ray.Point_On_Ray(temp);
