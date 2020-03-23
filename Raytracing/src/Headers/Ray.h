@@ -11,7 +11,7 @@
 			Vector3 Start_Point() const { return StartPoint; }
 			Vector3 Ray_Direction() const { return RayDirection; }
 			Vector3 Point_On_Ray(double t) const;
-		private:
+		//private:
 			Vector3 StartPoint, RayDirection;
 	};
 

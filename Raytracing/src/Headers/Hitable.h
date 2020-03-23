@@ -2,12 +2,15 @@
 #define HITABLE_H_
 
 #include "Ray.h"
+	
+	class Material;
 
 	struct HitRecord
 	{
 		double t;
 		Vector3 HitPoint;
 		Vector3 Normal;
+		Material *mat_ptr;
 	};
 
 	class Hitable

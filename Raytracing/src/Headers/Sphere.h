@@ -2,34 +2,34 @@
 #define SPHERE_H_
 
 #include "Hitable.h"
-
+ 
+	class Material;
+		
 	class Sphere : public Hitable
 	{
 	public:
 		Vector3 Center;
 		double Radius;
-
-		Sphere();
-		Sphere(Vector3 center, double radius);
+		Material* mat;
+		 
+		Sphere(Vector3 center, double radius, Material* m);
 		virtual bool isHit(const Ray& ray, double t_min, double t_max, HitRecord& hitRecord) const;
 
-	private:
+ 
 
 	};
+ 
 
-	Sphere::Sphere()
-	{
-	}
-
-	inline Sphere::Sphere(Vector3 center, double radius)
+	inline Sphere::Sphere(Vector3 center, double radius, Material* m)
 	{
 		Center = center;
 		Radius = radius;
+		mat = m;
 	}
 
 	bool Sphere::isHit(const Ray & ray, double t_min, double t_max, HitRecord & hitRecord) const
 	{
-		Vector3 DirectionFromCenterToStart = ray.Start_Point() - Sphere::Center;
+		Vector3 DirectionFromCenterToStart = ray.Start_Point() - this->Center;
 		double A = DotProduct(ray.Ray_Direction(), ray.Ray_Direction());
 		double B =  DotProduct(ray.Ray_Direction(), DirectionFromCenterToStart);
 		double C = DotProduct(DirectionFromCenterToStart, DirectionFromCenterToStart) - (Radius * Radius);
@@ -41,7 +41,8 @@
 			{
 				hitRecord.t = temp;
 				hitRecord.HitPoint = ray.Point_On_Ray(temp);
-				hitRecord.Normal = (hitRecord.HitPoint - Center) / Radius;
+				hitRecord.Normal = (hitRecord.HitPoint - this->Center) / Radius;
+				hitRecord.mat_ptr = mat;
 				return true;
 			}
 			temp = (-B + sqrt(Discriminant)) / A;
@@ -50,6 +51,7 @@
 				hitRecord.t = temp;
 				hitRecord.HitPoint = ray.Point_On_Ray(temp);
 				hitRecord.Normal = (hitRecord.HitPoint - Center) / Radius;
+				hitRecord.mat_ptr = mat;
 				return true;
 			}
 		}	 

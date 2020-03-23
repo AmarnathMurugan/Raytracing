@@ -1,10 +1,10 @@
-
+#include <time.h>
 #include "Headers/Hitable_list.h"
 #include "Headers/Sphere.h"
 #include "Headers/Camera.h"
-#include <time.h>
+#include "Headers/Material.h"
 
-Vector3 ColorAtRay(const Ray& ray, HitableList* world  );
+Vector3 ColorAtRay(const Ray& ray, HitableList* world, int depth);
 float rand01();
 Vector3 RandomPointInUnitSphere();
 unsigned long int count = 0;
@@ -20,10 +20,13 @@ int main()
 	std::cout << "P3\n";
 	std::cout << Width << " " << Height << "\n255\n";
 	Camera cam;	
-	Hitable* ModelArrays[2];
-	ModelArrays[0] = new Sphere(Vector3(0, 0, -1), 0.5);
-	ModelArrays[1] = new Sphere(Vector3(0, -100.5, -1), 100);
-	HitableList* World = new HitableList(ModelArrays, 2);
+	Hitable* ModelArrays[5];
+	ModelArrays[0] = new Sphere(Vector3(0, 0, -1), 0.5, new lambertian(Vector3(0.8,0.3,0.3)));
+	ModelArrays[1] = new Sphere(Vector3(1, 0, -1), 0.5, new Metal(Vector3(0.8, 0.8, 0.8)));
+	ModelArrays[2] = new Sphere(Vector3(-1, 0, -1), 0.5, new Metal(Vector3(0.8, 0.6, 0.2)));
+	ModelArrays[3] = new Sphere(Vector3(0, -100.5, -1), 100, new lambertian(Vector3(0.8, 0.8, 0.0)));
+	ModelArrays[4] = new Sphere(Vector3(-1, 0, 2), 0.5, new lambertian(Vector3(.5, 0.5, 0.2)));
+	HitableList* World = new HitableList(ModelArrays, 5);
 	
 	for (int y = Height - 1; y >= 0; y--)
 	{
@@ -35,7 +38,7 @@ int main()
 				float U = (x + rand01()) / (float)Width;
 				float V = (y + rand01()) / (float)Height;
 				Ray ray = cam.GetRayAtUV(U, V);
-				color += ColorAtRay(ray, World);
+				color += ColorAtRay(ray, World, 0);
 			}
 			color /= (double)Samples;
 			color = Vector3(sqrt(color.r()), sqrt(color.g()), sqrt(color.b()));
@@ -51,13 +54,17 @@ int main()
 	std::cin.get();
 }
 
-Vector3 ColorAtRay(const Ray& ray, HitableList* world  )
+Vector3 ColorAtRay(const Ray& ray, HitableList* world, int depth)
 {
 	HitRecord hitRecord;
-	if (world->isHit(ray, 0.01, 10, hitRecord))
+	if (world->isHit(ray, 0.001, DBL_MAX, hitRecord))
 	{
-		Vector3 target = hitRecord.HitPoint + hitRecord.Normal + RandomPointInUnitSphere();
-		return 0.5 * ColorAtRay(Ray(hitRecord.HitPoint,target - hitRecord.HitPoint), world);
+		Vector3 Attenuation;
+		Ray ScatteredRay;
+		if (depth < 50 && hitRecord.mat_ptr->scatter(ray, hitRecord, Attenuation, ScatteredRay))
+			return Attenuation * ColorAtRay(ScatteredRay, world, depth + 1);
+		else
+			return Vector3(0, 0, 0);
 	}
 	else
 	{
@@ -67,20 +74,5 @@ Vector3 ColorAtRay(const Ray& ray, HitableList* world  )
 	}
 }
 
-float rand01()
-{
-	return ((float)rand() / RAND_MAX);
-}
-
-Vector3 RandomPointInUnitSphere()
-{
-	Vector3 Offset(1, 1, 1);
-	Vector3 point;
-	do
-	{
-		point = 2.0 * Vector3(rand01(), rand01(), rand01()) - Offset;
-	} while (point.SqrdLength() >= 1);
-	return point;
-}
 
 
