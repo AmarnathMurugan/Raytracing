@@ -4,8 +4,7 @@
 #include "Hitable.h"
 #include "Utils.h"
 
-	Vector3 Reflect(const Vector3& SrcVec, const Vector3& Normal);
-
+	 
 	class Material
 	{
 		public:
@@ -56,16 +55,12 @@
 	bool Metal::scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay)
 	{
 	 
-		Vector3 ReflectedRay = Reflect(SourceRay.RayDirection , hitRecord.Normal);
+		Vector3 ReflectedRay = ReflectVector(SourceRay.Ray_Direction() , hitRecord.Normal);
 		scatteredRay = Ray(hitRecord.HitPoint, ReflectedRay);
 		attenuation = this->Albedo;
 		return (DotProduct(scatteredRay.Ray_Direction(), hitRecord.Normal) > 0);
 	}
 
-	Vector3 Reflect(const Vector3& SrcVec, const Vector3& Normal)
-	{
-		return SrcVec - (2 * DotProduct(SrcVec, Normal)) * Normal;
-	}
 
 #endif // !MATERIAL_H_
 

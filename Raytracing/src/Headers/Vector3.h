@@ -97,34 +97,7 @@
 			this->values[i] /= len;
 	}
 
-	//VECTOR - VECTOR OPERATIONS
-
-	inline double Vector3::dot(const Vector3 & v2) const
-	{
-		return (this->x()*v2.x() + this->y()*v2.y() + this->z()*v2.z());
-	}
-
-	inline double  DotProduct(const Vector3 & v1, const Vector3 & v2)  
-	{
-		return (v1.x()*v2.x() + v1.y()*v2.y() + v1.z()*v2.z());
-	}
-
-
-
-	inline Vector3  Cross(const Vector3 & v1, const Vector3 & v2) 
-	{
-		return Vector3((v1.y()*v2.z() - v1.z()*v2.y()),
-			-(v1.x()*v2.z() - v1.z()*v2.x()),
-			(v1.x()*v2.y() - v1.y()*v2.x()));
-	}
-
-	inline Vector3 Vector3::Cross(const Vector3 & v2) const
-	{
-		return Vector3((this->y()*v2.z() - this->z()*v2.y()),
-			-(this->x()*v2.z() - this->z()*v2.x()),
-			(this->x()*v2.y() - this->y()*v2.x()));
-	}
-
+	
 	
 	// VECTOR ARITHMETIC
 
@@ -214,7 +187,39 @@
 		return os;
 	}
 
+	//VECTOR - VECTOR OPERATIONS
 
+	inline double Vector3::dot(const Vector3 & v2) const
+	{
+		return (this->x()*v2.x() + this->y()*v2.y() + this->z()*v2.z());
+	}
+
+	inline double  DotProduct(const Vector3 & v1, const Vector3 & v2)
+	{
+		return (v1.x()*v2.x() + v1.y()*v2.y() + v1.z()*v2.z());
+	}
+
+
+
+	inline Vector3  Cross(const Vector3 & v1, const Vector3 & v2)
+	{
+		return Vector3((v1.y()*v2.z() - v1.z()*v2.y()),
+			-(v1.x()*v2.z() - v1.z()*v2.x()),
+			(v1.x()*v2.y() - v1.y()*v2.x()));
+	}
+
+	inline Vector3 Vector3::Cross(const Vector3 & v2) const
+	{
+		return Vector3((this->y()*v2.z() - this->z()*v2.y()),
+			-(this->x()*v2.z() - this->z()*v2.x()),
+			(this->x()*v2.y() - this->y()*v2.x()));
+	}
+
+
+	Vector3 ReflectVector(const Vector3& SrcVec, const Vector3& Normal)
+	{
+		return SrcVec - (2 * DotProduct(SrcVec, Normal)) * Normal;
+	}
 
 #endif // !VECTOR3_H_
 
