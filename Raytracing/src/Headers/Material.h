@@ -15,17 +15,13 @@
 	{
 	public:
 		
-		lambertian(Vector3 a);
+		lambertian(const Vector3& a) : Albedo(a) {}
 		virtual bool scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay);
 		
 		Vector3 Albedo;
 
 	};
 
-	lambertian::lambertian(Vector3 a)
-	{
-		this->Albedo = a;
-	}
 
 	bool lambertian::scatter(const Ray& SourceRay, const HitRecord & hitRecord, Vector3& attenuation, Ray & scatteredRay)
 	{
@@ -41,22 +37,19 @@
 	{
 	public:
 		
-		Metal(Vector3 a);
+		Metal(const Vector3& a, float f) : Albedo(a) { if (f <= 1) fuzziness = f; else  fuzziness = 1; }
 		virtual bool scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay);
 
 		Vector3 Albedo;
+		float fuzziness;
 	};
-
-	inline Metal::Metal(Vector3 a)
-	{
-		this->Albedo = a;
-	}
+	 
 
 	bool Metal::scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay)
 	{
 	 
 		Vector3 ReflectedRay = ReflectVector(SourceRay.Ray_Direction() , hitRecord.Normal);
-		scatteredRay = Ray(hitRecord.HitPoint, ReflectedRay);
+		scatteredRay = Ray(hitRecord.HitPoint, ReflectedRay+ this->fuzziness * RandomPointInUnitSphere());
 		attenuation = this->Albedo;
 		return (DotProduct(scatteredRay.Ray_Direction(), hitRecord.Normal) > 0);
 	}
