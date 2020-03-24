@@ -21,11 +21,11 @@ int main()
 	std::cout << Width << " " << Height << "\n255\n";
 	Camera cam;	
 	Hitable* ModelArrays[5];
-	ModelArrays[0] = new Sphere(Vector3(0, 0, -1), 0.5, new lambertian(Vector3(0.8,0.3,0.3)));
-	ModelArrays[1] = new Sphere(Vector3(1, 0, -1), 0.5, new Metal(Vector3(0.8, 0.8, 0.8),.3));
-	ModelArrays[2] = new Sphere(Vector3(-1, 0, -1), 0.5, new Metal(Vector3(0.8, 0.6, 0.2),.8));
-	ModelArrays[3] = new Sphere(Vector3(0, -100.5, -1), 100, new lambertian(Vector3(0.8, 0.8, 0.0)));
-	ModelArrays[4] = new Sphere(Vector3(-1, 0, 2), 0.5, new lambertian(Vector3(.5, 0.5, 0.2)));
+	ModelArrays[0] = new Sphere(Vector3(0, 0, -1), 0.5, new Lambertian(Vector3(0.8,0.3,0.3)));
+	ModelArrays[1] = new Sphere(Vector3(1, 0, -1), 0.5, new Metal(Vector3(0.7, 0.7, 0.7),0));
+	ModelArrays[2] = new Sphere(Vector3(-1, 0, -1), 0.5, new Dielectric(1.5));
+	ModelArrays[3] = new Sphere(Vector3(0, -100.5, -1), 100, new Lambertian(Vector3(0.8, 0.8, 0.0)));
+	ModelArrays[4] = new Sphere(Vector3(-1, 0, -1), -0.45, new Dielectric(1.5));
 	HitableList* World = new HitableList(ModelArrays, 5);
 	
 	for (int y = Height - 1; y >= 0; y--)
