@@ -50,7 +50,7 @@
 			{
 				hitRecord.t = temp;
 				hitRecord.HitPoint = ray.Point_On_Ray(temp);
-				hitRecord.Normal = (hitRecord.HitPoint - Center) / Radius;
+				hitRecord.Normal = (hitRecord.HitPoint - this->Center) / Radius;
 				hitRecord.mat_ptr = mat;
 				return true;
 			}

@@ -19,15 +19,14 @@ int main()
 	int Samples = 100;
 	std::cout << "P3\n";
 	std::cout << Width << " " << Height << "\n255\n";
-	Camera cam;	
-	Hitable* ModelArrays[5];
+	Camera cam(30,(Width/(double)Height),Vector3(-2,2,1),Vector3(0,0,-1),Vector3(0,1,0));
+	Hitable* ModelArrays[4];
 	ModelArrays[0] = new Sphere(Vector3(0, 0, -1), 0.5, new Lambertian(Vector3(0.8,0.3,0.3)));
 	ModelArrays[1] = new Sphere(Vector3(1, 0, -1), 0.5, new Metal(Vector3(0.7, 0.7, 0.7),0));
 	ModelArrays[2] = new Sphere(Vector3(-1, 0, -1), 0.5, new Dielectric(1.5));
 	ModelArrays[3] = new Sphere(Vector3(0, -100.5, -1), 100, new Lambertian(Vector3(0.8, 0.8, 0.0)));
-	ModelArrays[4] = new Sphere(Vector3(-1, 0, -1), -0.45, new Dielectric(1.5));
-	HitableList* World = new HitableList(ModelArrays, 5);
-	
+	//ModelArrays[4] = new Sphere(Vector3(-1, 0, -1), -0.45, new Dielectric(1.5));
+	HitableList* World = new HitableList(ModelArrays, 4);
 	for (int y = Height - 1; y >= 0; y--)
 	{
 		for (int x = 0; x < Width; x++)
@@ -50,14 +49,13 @@ int main()
 		std::cout << std::endl;
 	}
 
-  
 	std::cin.get();
 }
 
 Vector3 ColorAtRay(const Ray& ray, HitableList* world, int depth)
 {
 	HitRecord hitRecord;
-	if (world->isHit(ray, 0.001, DBL_MAX, hitRecord))
+	if (world->isHit(ray, 0.01, DBL_MAX, hitRecord))
 	{
 		Vector3 Attenuation;
 		Ray ScatteredRay;
