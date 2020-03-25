@@ -19,7 +19,12 @@ int main()
 	int Samples = 100;
 	std::cout << "P3\n";
 	std::cout << Width << " " << Height << "\n255\n";
-	Camera cam(30,(Width/(double)Height),Vector3(-2,2,1),Vector3(0,0,-1),Vector3(0,1,0));
+	Vector3 LookFrom(3, 3, 2);
+	Vector3 LookAt(0, 0, -1);
+	Vector3 ViewUp(0, 1, 0);
+	double focalDistance = (LookFrom - LookAt).length();
+	double aperture = 2.0;
+	Camera cam(20,(Width/(double)Height),aperture,focalDistance,LookFrom,LookAt,ViewUp);
 	Hitable* ModelArrays[4];
 	ModelArrays[0] = new Sphere(Vector3(0, 0, -1), 0.5, new Lambertian(Vector3(0.8,0.3,0.3)));
 	ModelArrays[1] = new Sphere(Vector3(1, 0, -1), 0.5, new Metal(Vector3(0.7, 0.7, 0.7),0));

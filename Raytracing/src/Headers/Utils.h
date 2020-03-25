@@ -23,6 +23,15 @@ Vector3 RandomPointInUnitSphere()
 	return point;
 }
 
-
+Vector3 RandomPointInUnitCircle()
+{
+	Vector3 Offset(1, 1, 0);
+	Vector3 point;
+	do
+	{
+		point = 2.0 * Vector3(rand01(), rand01(), 0) - Offset;
+	} while (DotProduct(point, point) >= 1);
+	return point;
+}
 #endif // !UTILS_H_
 
