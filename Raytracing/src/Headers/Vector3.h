@@ -26,8 +26,10 @@
 
 			inline Vector3& operator +=(const Vector3& v2);
 			inline Vector3& operator -=(const Vector3& v2);
-			inline Vector3& operator *=(const float t);
-			inline Vector3& operator /=(const float t);
+			inline Vector3& operator *=(const double t);
+			inline Vector3& operator /=(const double t);
+			inline bool operator ==(const Vector3& v2) const;
+			inline bool operator !=(const Vector3& v2) const;
 
 			inline double length() const;
 			inline double SqrdLength() const;
@@ -155,7 +157,7 @@
 		return *this;
 	}
 
-	inline Vector3 & Vector3::operator*=(const float t)
+	inline Vector3 & Vector3::operator*=(const double t)
 	{
 		values[0] *= t;
 		values[1] *= t;
@@ -163,12 +165,26 @@
 		return *this;
 	}
 
-	inline Vector3 & Vector3::operator/=(const float t)
+	inline Vector3 & Vector3::operator/=(const double t)
 	{
 		values[0] /= t;
 		values[1] /= t;
 		values[2] /= t;
 		return *this;
+	}
+
+	inline bool Vector3::operator==(const Vector3 & v2) const
+	{
+		for (int i = 0; i < 3; i++)
+			if (this->values[i] != v2.values[i]) return false;
+		return true;
+	}
+
+	inline bool Vector3::operator!=(const Vector3 & v2) const
+	{
+		for (int i = 0; i < 3; i++)
+			if (this->values[i] != v2.values[i]) return true;
+		return false;
 	}
 
 
