@@ -3,9 +3,9 @@
 #include "Headers/Sphere.h"
 #include "Headers/Camera.h"
 #include "Headers/Material.h"
-
+#include <fstream>
 Vector3 ColorAtRay(const Ray& ray, HitableList* world, int depth);
-float rand01();
+HitableList* GetRandomWorld();
 Vector3 RandomPointInUnitSphere();
 unsigned long int count = 0;
 
@@ -14,28 +14,24 @@ unsigned long int count = 0;
 int main()
 {
 	srand((unsigned)time(0));
-	int Width = 200;
-	int Height = 100;
+	int Width = 1920;
+	int Height = 1080;
 	int Samples = 100;
-	std::cout << "P3\n";
-	std::cout << Width << " " << Height << "\n255\n";
-	Vector3 LookFrom(3, 3, 2);
-	Vector3 LookAt(0, 0, -1);
+	std::fstream OutputFile("Output.txt", std::ios::out | std::ios::trunc);
+	OutputFile << "P3\n";
+	OutputFile << Width << " " << Height << "\n255\n";
+	Vector3 LookFrom(13, 2, 3);
+	Vector3 LookAt(0, 0, 0);
 	Vector3 ViewUp(0, 1, 0);
 	double focalDistance = (LookFrom - LookAt).length();
-	double aperture = 2.0;
-	Camera cam(20,(Width/(double)Height),aperture,focalDistance,LookFrom,LookAt,ViewUp);
-	Hitable* ModelArrays[4];
-	ModelArrays[0] = new Sphere(Vector3(0, 0, -1), 0.5, new Lambertian(Vector3(0.8,0.3,0.3)));
-	ModelArrays[1] = new Sphere(Vector3(1, 0, -1), 0.5, new Metal(Vector3(0.7, 0.7, 0.7),0));
-	ModelArrays[2] = new Sphere(Vector3(-1, 0, -1), 0.5, new Dielectric(1.5));
-	ModelArrays[3] = new Sphere(Vector3(0, -100.5, -1), 100, new Lambertian(Vector3(0.8, 0.8, 0.0)));
-	//ModelArrays[4] = new Sphere(Vector3(-1, 0, -1), -0.45, new Dielectric(1.5));
-	HitableList* World = new HitableList(ModelArrays, 4);
+	double aperture = 0.1;
+	Camera cam(30,(Width/(double)Height),aperture,focalDistance,LookFrom,LookAt,ViewUp);
+	HitableList* World = GetRandomWorld(); 
 	for (int y = Height - 1; y >= 0; y--)
 	{
 		for (int x = 0; x < Width; x++)
-		{
+		{			
+			std::cout << "Percent Complete : " << ((Width)*(Height-y-1)+(x+1))*100/(float)(Width*Height) << "  x : " << x << "  y : " << y ;
 			Vector3 color(0,0,0);
 			for (int s = 0; s < Samples; s++)
 			{
@@ -49,11 +45,14 @@ int main()
 			int r = (int)(255.99 * color.r());
 			int g = (int)(255.99 * color.g());
 			int b = (int)(255.99 * color.b());
-			std::cout << r << " " << g << " " << b<<"  ";			 
+			std::cout << "\r";
+			//std::cout << r << " " << g << " " << b<<"  ";			 
+			OutputFile << r << " " << g << " " << b << "  ";
 		}
-		std::cout << std::endl;
+		//std::cout << std::endl;
+		OutputFile << std::endl;
 	}
-
+	OutputFile.close();
 	std::cin.get();
 }
 
@@ -75,6 +74,35 @@ Vector3 ColorAtRay(const Ray& ray, HitableList* world, int depth)
 		double NormalizedY = 0.5*(NormalizedDirection.y() + 1);
 		return (1 - NormalizedY)*Vector3(1.0, 1.0, 1.0) + NormalizedY * Vector3(.5, .7, 1.0);
 	}
+}
+
+HitableList * GetRandomWorld()
+{
+	Hitable** ModelArrays= new Hitable*[500];
+	ModelArrays[0] = new Sphere(Vector3(0, -1000.5, -1), 1000, new Lambertian(Vector3(0.5, 0.5, 0.5)));
+	int i = 1;
+	for (int a = -11; a < 11; a++)
+	{
+		for (int b = -11; b < 11; b++)
+		{
+			double MaterialProbability = rand01(); 
+			Vector3 Center(a + 0.9*rand01(), 0.2, b + 0.9*rand01());
+			if ((Center - Vector3(0, 1, 0)).length() > 2)
+			{
+				if (MaterialProbability < 0.8)
+					ModelArrays[i++] = new Sphere(Center, 0.2, new Lambertian(Vector3(rand01()*rand01(), rand01()*rand01(), rand01()*rand01())));
+				else if(MaterialProbability < 0.9)
+					ModelArrays[i++] = new Sphere(Center, 0.2, new Metal(Vector3(0.5*(1+rand01()), 0.5*(1 + rand01()), 0.5*(1 + rand01())),0.5*rand01()));
+				else
+					ModelArrays[i++] = new Sphere(Center, 0.2, new Dielectric(1.5));
+			}
+
+		}
+	}
+	ModelArrays[i++] = new Sphere(Vector3(0,1,0), 1, new Dielectric(1.5));
+	ModelArrays[i++] = new Sphere(Vector3(-4,1,0), 1, new Lambertian(Vector3(0.3, 0.5, 0.1)));
+	ModelArrays[i++] = new Sphere(Vector3(4,1,0),1, new Metal(Vector3(0.7, 0.6, 0.5), 0.0));
+	return new HitableList(ModelArrays, i);
 }
 
 
