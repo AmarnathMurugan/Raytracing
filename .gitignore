@@ -351,3 +351,5 @@ MigrationBackup/
 Raytracing/Raytracing.vcxproj
 
 Raytracing/Raytracing.vcxproj.filters
+
+*.ppm
