@@ -11,7 +11,8 @@
 		Vector3 Center;
 		double Radius;
 		Material* mat;
-		 
+		
+		Sphere(Vector3 center, double radius) : Center(center), Radius(radius) {}
 		Sphere(Vector3 center, double radius, Material* m);
 		virtual bool isHit(const Ray& ray, double t_min, double t_max, HitRecord& hitRecord) const;
 
@@ -41,7 +42,8 @@
 			{
 				hitRecord.t = temp;
 				hitRecord.HitPoint = ray.Point_On_Ray(temp);
-				hitRecord.Normal = (hitRecord.HitPoint - this->Center) / Radius;
+				Vector3 OutwardNormal = (hitRecord.HitPoint - this->Center) / Radius;
+				hitRecord.SetFaceNormal(ray, OutwardNormal);
 				hitRecord.mat_ptr = mat;
 				return true;
 			}
@@ -50,7 +52,8 @@
 			{
 				hitRecord.t = temp;
 				hitRecord.HitPoint = ray.Point_On_Ray(temp);
-				hitRecord.Normal = (hitRecord.HitPoint - this->Center) / Radius;
+				Vector3 OutwardNormal = (hitRecord.HitPoint - this->Center) / Radius;
+				hitRecord.SetFaceNormal(ray, OutwardNormal);
 				hitRecord.mat_ptr = mat;
 				return true;
 			}

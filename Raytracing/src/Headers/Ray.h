@@ -7,7 +7,7 @@
 	{
 		public:
 			Ray();
-			Ray(const Vector3& startPoint,const Vector3& rayDirection);
+			Ray(const Vector3& startPoint, const Vector3& rayDirection) : StartPoint{ startPoint }, RayDirection{ rayDirection }{}
 			Vector3 Start_Point() const { return StartPoint; }
 			Vector3 Ray_Direction() const { return RayDirection; }
 			Vector3 Point_On_Ray(double t) const;
@@ -19,11 +19,7 @@
 	{
 	}
 
-	inline Ray::Ray(const Vector3& startPoint, const Vector3& rayDirection)
-	{
-		StartPoint = startPoint;
-		RayDirection = rayDirection;
-	}	 
+	 	 
 
 	inline Vector3 Ray::Point_On_Ray(double t) const
 	{

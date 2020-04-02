@@ -10,7 +10,14 @@
 		double t;
 		Vector3 HitPoint;
 		Vector3 Normal;
+		bool isFrontFace;
 		Material *mat_ptr;
+
+		inline void SetFaceNormal(const Ray& ray, const Vector3 OutwardNormal)
+		{
+			isFrontFace = DotProduct(ray.Ray_Direction(), OutwardNormal) < 0;
+			Normal = isFrontFace ? OutwardNormal : -OutwardNormal;
+		}
 	};
 
 	class Hitable

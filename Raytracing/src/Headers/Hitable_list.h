@@ -1,40 +1,40 @@
 #ifndef HITABLE_LIST_H_
 #define HITABLE_LIST_H_
 	
-	#include "Hitable.h"	
+#include "Hitable.h"	
+#include<memory>
+#include<vector>
+
+using std::shared_ptr;
+using std::make_shared;
 
 	class HitableList : public Hitable
 	{
 	public:
-		HitableList();
-		HitableList(Hitable** list, int size);
+		
+		HitableList(shared_ptr<Hitable> obj) { Add(obj); }
+		void Add(shared_ptr<Hitable> obj) { Objects.push_back(obj); } //try emplace_back
+		void Clear() { Objects.clear(); }
+
 		virtual bool isHit(const Ray& ray, double t_min, double t_max, HitRecord& hitRecord) const;
-		Hitable** hList;
-		int ListSize;
+		
+		
 
-	private:
-
+	public:
+		std::vector<shared_ptr<Hitable>> Objects;
 	};
 
-	HitableList::HitableList()
-	{
-
-	}
-
-	inline HitableList::HitableList(Hitable** list, int size)
-	{
-		hList = list;
-		ListSize = size;
-	}
+	
+ 
 
 	inline bool HitableList::isHit(const Ray & ray, double t_min, double t_max, HitRecord & hitRecord) const
 	{
 		HitRecord TempHitRecord;
 		bool isAnythingHit = false;
 		double ClosestValueYet = t_max;
-		for (int i = 0; i < ListSize; i++)
+		for (int i = 0; i < Objects.size(); i++)
 		{
-			if (hList[i]->isHit(ray, t_min, ClosestValueYet, TempHitRecord))
+			if (Objects[i]->isHit(ray, t_min, ClosestValueYet, TempHitRecord))
 			{
 				isAnythingHit = true;
 				ClosestValueYet = TempHitRecord.t;

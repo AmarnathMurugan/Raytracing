@@ -8,8 +8,8 @@
 	{
 		public:
 
-			Vector3();
-			Vector3(double x, double y, double z);
+			Vector3() : values{ 0,0,0 } {}
+			Vector3(double x, double y, double z) : values{ x,y,z } {}
 			inline void SetValues(double x, double y, double z);
 
 			inline double x() const { return values[0]; }
@@ -50,21 +50,7 @@
 
 	};
 
-	//CONSTRUCTORS   
-
-	Vector3::Vector3()
-	{
-		values[0] = 0;
-		values[1] = 0;
-		values[2] = 0;
-	}
-
-	Vector3::Vector3(double x, double y, double z)
-	{
-		values[0] = x;
-		values[1] = y;
-		values[2] = z;
-	}
+	//CONSTRUCTORS    
 
 	inline void Vector3::SetValues(double x, double y, double z)
 	{

@@ -9,7 +9,7 @@
 		public:
 			Camera(double vFov, double aspect,double aperture, double focalDistance, Vector3 LookFrom, Vector3 LookAt, Vector3 ViewUp);
 			
-			Ray GetRayAtUV(float U, float V);
+			Ray GetRayAtUV(double U, double V);
 	
 	private:	
 		Vector3 Origin;
@@ -38,7 +38,7 @@
 		Vertical = 2 * halfHeight * focalDistance * v;
 	}
 
-	inline Ray Camera::GetRayAtUV(float U, float V)
+	inline Ray Camera::GetRayAtUV(double U, double V)
 	{
 		Vector3 RandomPointInLens = this->LensRadius * RandomPointInUnitCircle();
 		Vector3 Offset = RandomPointInLens.x() * this->u + RandomPointInLens.y() * this->v;

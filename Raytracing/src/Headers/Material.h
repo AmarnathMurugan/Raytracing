@@ -106,7 +106,7 @@
 			ReflectionProbability = 1;
 		}
 
-		if (rand01() < ReflectionProbability)
+		if (RandomDouble() < ReflectionProbability)
 		{
 			scatteredRay = Ray(hitRecord.HitPoint, reflectedDirection);
 		}
