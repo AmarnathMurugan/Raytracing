@@ -11,7 +11,7 @@
 		Vector3 HitPoint;
 		Vector3 Normal;
 		bool isFrontFace;
-		Material *mat_ptr;
+		std::shared_ptr<Material> mat_ptr;
 
 		inline void SetFaceNormal(const Ray& ray, const Vector3 OutwardNormal)
 		{

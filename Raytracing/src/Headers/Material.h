@@ -31,7 +31,7 @@
 
 	bool Lambertian::scatter(const Ray& SourceRay, const HitRecord & hitRecord, Vector3& attenuation, Ray & scatteredRay) const
 	{
-		Vector3 target = hitRecord.HitPoint + hitRecord.Normal + RandomPointInUnitSphere();
+		Vector3 target = hitRecord.HitPoint + hitRecord.Normal + RandomPointOnUnitSphere();
 		scatteredRay = Ray(hitRecord.HitPoint, (target - hitRecord.HitPoint));
 		attenuation = this->Albedo;
 		return true;
@@ -43,7 +43,7 @@
 	{
 	public:
 		
-		Metal(const Vector3& a, double f) : Albedo(a) { if (f <= 1) fuzziness = f; else  fuzziness = 1; }
+		Metal(const Vector3& a, double f) : Albedo(a),fuzziness(f>1 ? 1:f) { }
 		virtual bool scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay) const;
 
 		Vector3 Albedo;
@@ -54,7 +54,7 @@
 	bool Metal::scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay) const 
 	{
 	 
-		Vector3 ReflectedRay = ReflectVector(SourceRay.Ray_Direction() , hitRecord.Normal);
+		Vector3 ReflectedRay = ReflectVector(SourceRay.Ray_Direction().normalized() , hitRecord.Normal);
 		scatteredRay = Ray(hitRecord.HitPoint, ReflectedRay+ this->fuzziness * RandomPointInUnitSphere());
 		attenuation = this->Albedo;
 		return (DotProduct(scatteredRay.Ray_Direction(), hitRecord.Normal) > 0);
@@ -68,7 +68,7 @@
 		Dielectric(double ref_indx) : RefractiveIndex(ref_indx) {}
 
 		virtual bool scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay) const;
-		bool RefractRay(const Vector3& IncidentRay, const double NiOverNt, const Vector3& OutwardNormal, Vector3& RefractedDirection) const;
+		Vector3 RefractRay(const Vector3& IncidentRay, const double NiOverNt, const Vector3& OutwardNormal) const;
 		
 
 		double RefractiveIndex;
@@ -77,44 +77,38 @@
 
 	bool Dielectric::scatter(const Ray & SourceRay, const HitRecord & hitRecord, Vector3 & attenuation, Ray & scatteredRay) const
 	{
-		Vector3 OutwardNormal , RefractedRayDirection;
-		double NiOverNt , ReflectionProbability, Cosine;
-		attenuation = Vector3(1, 1, 1);
-		Vector3 reflectedDirection = ReflectVector(SourceRay.Ray_Direction(), hitRecord.Normal);
+		 
+		
+		attenuation = Vector3(1.0, 1.0, 1.0);
 
-		//When entering glass
-		if (DotProduct(SourceRay.Ray_Direction(), hitRecord.Normal) > 0)
-		{
-			OutwardNormal = -hitRecord.Normal;
-			NiOverNt = this->RefractiveIndex;
-			Cosine = this->RefractiveIndex * DotProduct(SourceRay.Ray_Direction(), hitRecord.Normal) / SourceRay.Ray_Direction().length();
-		}
-		//When exiting glass
-		else
-		{
-			OutwardNormal = hitRecord.Normal;
-			NiOverNt = 1 / this->RefractiveIndex;
-			Cosine = -DotProduct(SourceRay.Ray_Direction(), hitRecord.Normal) / SourceRay.Ray_Direction().length();
-		}
-			
-		if (RefractRay(SourceRay.Ray_Direction(), NiOverNt, OutwardNormal, RefractedRayDirection))
-		{
-			ReflectionProbability = GetReflectionProbability(RefractiveIndex, Cosine);			
-		}
-		else
-		{		 
-			ReflectionProbability = 1;
-		}
+		double NiOverNt = (hitRecord.isFrontFace) ? (1 / RefractiveIndex) : RefractiveIndex;
 
+		double CosThetaIncident = ffmin(DotProduct(-SourceRay.Ray_Direction().normalized(), hitRecord.Normal), 1.0);
+		double SinThetaIncident = sqrt(1.0 - CosThetaIncident * CosThetaIncident);
+
+		Vector3 reflectedDirection = ReflectVector(SourceRay.Ray_Direction().normalized(), hitRecord.Normal);
+		
+		if (NiOverNt*SinThetaIncident > 1.0)
+		{
+			scatteredRay = Ray(hitRecord.HitPoint, reflectedDirection);
+			return true;
+		}
+	 
+		double ReflectionProbability = GetReflectionProbability(RefractiveIndex, CosThetaIncident);	
+		
+		 
 		if (RandomDouble() < ReflectionProbability)
 		{
 			scatteredRay = Ray(hitRecord.HitPoint, reflectedDirection);
+			return true;
 		}
 		else
 		{
+			Vector3 RefractedRayDirection = RefractRay(SourceRay.Ray_Direction(), NiOverNt, hitRecord.Normal);
 			scatteredRay = Ray(hitRecord.HitPoint, RefractedRayDirection);
+			return true;
 		}
-		return true;
+	 
 	}
 
 	double GetReflectionProbability(double RefIndx,double Cos)
@@ -124,18 +118,13 @@
 		return r0 + (1 - r0) * pow((1 - Cos), 5);
 	} 
 
-	bool Dielectric::RefractRay(const Vector3& IncidentRay, const double NiOverNt, const Vector3& OutwardNormal, Vector3& RefractedDirection) const
+	Vector3 Dielectric::RefractRay(const Vector3& IncidentRay, const double NiOverNt, const Vector3& OutwardNormal) const
 	{
 		Vector3 UnitIncidentRay = IncidentRay.normalized();
-		double CosThetaIncident = DotProduct(UnitIncidentRay, OutwardNormal);
-		double discriminant = 1.0 - NiOverNt * NiOverNt * (1 - CosThetaIncident * CosThetaIncident);
-		if (discriminant > 0)
-		{
-			RefractedDirection = NiOverNt * (UnitIncidentRay - CosThetaIncident * OutwardNormal) - sqrt(discriminant) * OutwardNormal;
-			return true;
-		}
-		else
-			return false;
+		double CosThetaIncident = DotProduct(-UnitIncidentRay, OutwardNormal);
+		Vector3 Rparallel = NiOverNt * (UnitIncidentRay + CosThetaIncident * OutwardNormal);
+		Vector3 Rperpendicular = -sqrt(1 - Rparallel.SqrdLength())*OutwardNormal;
+		return  (Rparallel + Rperpendicular);
 	}
 	 
 

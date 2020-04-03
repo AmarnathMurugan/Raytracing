@@ -10,23 +10,15 @@
 	public:
 		Vector3 Center;
 		double Radius;
-		Material* mat;
+		shared_ptr<Material> mat;
 		
-		Sphere(Vector3 center, double radius) : Center(center), Radius(radius) {}
-		Sphere(Vector3 center, double radius, Material* m);
+		Sphere(Vector3 center, double radius, shared_ptr<Material> m) : Center(center), Radius(radius), mat(m) {}
 		virtual bool isHit(const Ray& ray, double t_min, double t_max, HitRecord& hitRecord) const;
 
  
 
 	};
  
-
-	inline Sphere::Sphere(Vector3 center, double radius, Material* m)
-	{
-		Center = center;
-		Radius = radius;
-		mat = m;
-	}
 
 	bool Sphere::isHit(const Ray & ray, double t_min, double t_max, HitRecord & hitRecord) const
 	{

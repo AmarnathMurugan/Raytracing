@@ -36,6 +36,15 @@ Vector3 RandomPointInUnitSphere()
 	return point;
 }
 
+
+Vector3 RandomPointOnUnitSphere()
+{
+	double theta = RandomDouble(0, 2 * M_PI);
+	double z = RandomDouble(-1, 1);
+	double r = sqrt(1 - (z*z));
+	return Vector3(r*cos(theta), r*sin(theta), z);
+}
+
 Vector3 RandomPointInUnitCircle()
 {
 	 
@@ -53,5 +62,8 @@ double Clamp(double value, double min, double max)
 	if (value > max) return max;
 	return value;
 }
+
+inline double ffmin(double a, double b) {return a >= b ? b : a; }
+inline double ffmax(double a, double b) {return a >= b ? a : b; }
 #endif // !UTILS_H_
 
