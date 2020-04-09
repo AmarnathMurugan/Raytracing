@@ -34,7 +34,7 @@ int main()
 	std::cout << "P3\n";
 	std::cout << imageWidth << " " << imageHeight << "\n255\n"; 
 
-	Vector3 LookFrom(-2, 2, 1);
+	Vector3 LookFrom(0, 0, 3);
 	Vector3 LookAt(0, 0, -1);
 	Vector3 ViewUp(0, 1, 0);
 	double focalDistance = (LookFrom - LookAt).length();
@@ -57,9 +57,9 @@ int main()
 	{
 		for (int x = 0; x < imageWidth; ++x)
 		{
-			int r = static_cast<int>(256 * Clamp(finalBuffer[y][x].r(), 0, 0.999));
-			int g = static_cast<int>(256 * Clamp(finalBuffer[y][x].g(), 0, 0.999));
-			int b = static_cast<int>(256 * Clamp(finalBuffer[y][x].b(), 0, 0.999));
+			int r = static_cast<int>(finalBuffer[y][x].r());
+			int g = static_cast<int>(finalBuffer[y][x].g());
+			int b = static_cast<int>(finalBuffer[y][x].b());
 			std::cout << r << " " << g << " " << b << " ";
 		}
 		std::cout << "\n";
@@ -98,7 +98,7 @@ Vector3 ColorAtRay(const Ray& ray, HitableList& world, int depth)
 	{
 		Vector3 NormalizedDirection = ray.Ray_Direction().normalized();
 		double NormalizedY = 0.5*(NormalizedDirection.y() + 1);
-		return (1 - NormalizedY)*Vector3(1, 1, 1) + NormalizedY * Vector3(0.5, 0.7, 1.0);
+		return (1 - NormalizedY)*Vector3(1, 1, 1) + NormalizedY * Vector3(1.0, 0.87, 0.619);
 	}
 }
 
@@ -136,9 +136,11 @@ void RenderImage(int ThreadIndex, HitableList& World, Camera& cam)
 			}
 			color /= (double)Samples;
 			finalBuffer[y][x] = Vector3(sqrt(color.r()), sqrt(color.g()), sqrt(color.b()));	
+			finalBuffer[y][x].SetValues(256 * Clamp(finalBuffer[y][x].r(), 0, 0.999),
+										256 * Clamp(finalBuffer[y][x].g(), 0, 0.999),
+										256 * Clamp(finalBuffer[y][x].b(), 0, 0.999));
 		}
-	}
- 
+	} 
 }
 
 
