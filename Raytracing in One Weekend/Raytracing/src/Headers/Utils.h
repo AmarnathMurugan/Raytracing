@@ -63,6 +63,11 @@ double Clamp(double value, double min, double max)
 	return value;
 }
 
+double Remap(double value, double Start1, double End1, double Start2, double End2)
+{
+	return Start2 + (End2 - Start2) * (value - Start1)/ (End1 - Start1);
+}
+
 inline double ffmin(double a, double b) {return a >= b ? b : a; }
 inline double ffmax(double a, double b) {return a >= b ? a : b; }
 #endif // !UTILS_H_

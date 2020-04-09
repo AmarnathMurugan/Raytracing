@@ -25,6 +25,7 @@
 
 	int NextHeight = imageHeight - 1;
 	Vector3 finalBuffer[imageHeight][imageWidth];
+	int Intbuffer[imageHeight][imageWidth][3];
 	std::mutex ChunkRangeMutex;
 	bool isComplete = false;
 #pragma endregion
@@ -97,8 +98,10 @@ Vector3 ColorAtRay(const Ray& ray, HitableList& world, int depth)
 	else
 	{
 		Vector3 NormalizedDirection = ray.Ray_Direction().normalized();
-		double NormalizedY = 0.5*(NormalizedDirection.y() + 1);
-		return (1 - NormalizedY)*Vector3(1, 1, 1) + NormalizedY * Vector3(1.0, 0.87, 0.619);
+		double NormalizedY = 0.5*(NormalizedDirection.y() + 1);		
+		NormalizedY = Clamp(Remap(NormalizedY, 0.4, 0.6, 0, 1),0,1);
+		Vector3 finalColor = (1 - NormalizedY)*Vector3(171, 169, 197) / 255 + NormalizedY * Vector3(225, 194, 183) / 255;
+		return finalColor * finalColor;
 	}
 }
 
@@ -136,10 +139,10 @@ void RenderImage(int ThreadIndex, HitableList& World, Camera& cam)
 			}
 			color /= (double)Samples;
 			finalBuffer[y][x] = Vector3(sqrt(color.r()), sqrt(color.g()), sqrt(color.b()));	
-			finalBuffer[y][x].SetValues(256 * Clamp(finalBuffer[y][x].r(), 0, 0.999),
-										256 * Clamp(finalBuffer[y][x].g(), 0, 0.999),
-										256 * Clamp(finalBuffer[y][x].b(), 0, 0.999));
-		}
+			finalBuffer[y][x].SetValues(255 * Clamp(finalBuffer[y][x].r(), 0, 0.999),
+										255 * Clamp(finalBuffer[y][x].g(), 0, 0.999),
+										255 * Clamp(finalBuffer[y][x].b(), 0, 0.999));			
+		}		
 	} 
 }
 
