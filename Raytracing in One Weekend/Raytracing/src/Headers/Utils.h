@@ -46,14 +46,19 @@ Vector3 RandomPointOnUnitSphere()
 }
 
 Vector3 RandomPointInUnitCircle()
-{
-	 
+{	 
 	Vector3 point;
 	do
 	{
 		point.SetValues(RandomDouble(-1, 1), RandomDouble(-1, 1), 0);
 	} while (DotProduct(point, point) >= 1);
 	return point;
+}
+
+Vector3 DirectionAtAngle(double angle)
+{
+	double theta = angle * M_PI / 180;
+	return Vector3(sin(theta), 0 , -cos(theta));
 }
 
 double Clamp(double value, double min, double max)

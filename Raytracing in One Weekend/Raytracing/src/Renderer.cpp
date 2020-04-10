@@ -15,17 +15,16 @@
 #pragma endregion
 	   
 #pragma region PUBLIC_VARIABLES
-	const int imageWidth = 200;
-	const int imageHeight = 100;
-	const int Samples = 200;
-	const int MaxDepth = 100;
+	const int imageWidth = 1920;
+	const int imageHeight = 1080;
+	const int Samples = 800;
+	const int MaxDepth = 200;
 
 	const int NumberOfThreads = std::thread::hardware_concurrency();
 	const int ChunkSize = imageHeight / NumberOfThreads;
 
 	int NextHeight = imageHeight - 1;
 	Vector3 finalBuffer[imageHeight][imageWidth];
-	int Intbuffer[imageHeight][imageWidth][3];
 	std::mutex ChunkRangeMutex;
 	bool isComplete = false;
 #pragma endregion
@@ -35,12 +34,12 @@ int main()
 	std::cout << "P3\n";
 	std::cout << imageWidth << " " << imageHeight << "\n255\n"; 
 
-	Vector3 LookFrom(0, 0, 3);
-	Vector3 LookAt(0, 0, -1);
+	Vector3 LookFrom(0, -0.38, 0.5);
+	Vector3 LookAt(0, 0, 4);
 	Vector3 ViewUp(0, 1, 0);
 	double focalDistance = (LookFrom - LookAt).length();
-	double aperture = 0.01;
-	Camera cam(30,(imageWidth/(double)imageHeight),aperture,focalDistance,LookFrom,LookAt,ViewUp);
+	double aperture = 0.02;
+	Camera cam(35,(imageWidth/(double)imageHeight),aperture,focalDistance,LookFrom,LookAt,ViewUp);
 	
 	HitableList World = GetWorld();
 
@@ -49,7 +48,8 @@ int main()
 	std::vector<std::thread> threads;
 	threads.reserve(NumberOfThreads);
 	for (int i = 0; i < NumberOfThreads; i++)
-		threads.emplace_back(std::thread(RenderImage, i, std::ref(World), std::ref(cam)));	
+		threads.emplace_back(std::thread(RenderImage, i, std::ref(World), std::ref(cam)));		 
+
 	for (std::thread &t : threads)
 		if (t.joinable()) t.join();
 	
@@ -65,7 +65,7 @@ int main()
 		}
 		std::cout << "\n";
 	}
- 
+	
 	auto EndTime = std::chrono::steady_clock::now();
 	std::cerr << "\n\aCompleted in : " << std::chrono::duration_cast<std::chrono::seconds>(EndTime - StartTime).count();
 
@@ -74,10 +74,35 @@ int main()
 
 HitableList GetWorld()
 {
-	HitableList World(make_shared<Sphere>(Vector3(0, 0, -1), 0.5, make_shared<Lambertian>(Vector3(0.7, 0.3, 0.3))));
-	World.Add(make_shared<Sphere>(Vector3(0, -100.5, -1), 100, make_shared<Lambertian>(Vector3(0.8, 0.8, 0))));
-	World.Add(make_shared<Sphere>(Vector3(1, 0, -1), 0.5, make_shared<Metal>(Vector3(0.8, 0.6, 0.2), 0.0)));
-	World.Add(make_shared<Sphere>(Vector3(-1, 0, -1), 0.5, make_shared<Dielectric>(1.5)));
+	HitableList World(make_shared<Sphere>(Vector3(0, -1000.5, 4), 1000, make_shared<Lambertian>(Vector3(0.7, 0.7, 0.7))));	
+	World.Add(make_shared<Sphere>(Vector3(0, 0, 4), 0.5, make_shared<Lambertian>(Vector3(0.2, 1.5, 2)))); 
+	int NumberOfSpheresInCircle = 18;
+	for (int i = 0; i < NumberOfSpheresInCircle; i++)
+	{
+		Vector3 dir = DirectionAtAngle(i * 360 / NumberOfSpheresInCircle);
+		Vector3 position = Vector3(0, 0, 4) + dir * 0.6;
+		World.Add(make_shared<Sphere>(position - Vector3(0, position.x()*0.3, 0), 0.04, make_shared<Lambertian>(Vector3(0.045, 1.1, .5))));
+	    position = Vector3(0, 0, 4) + dir * 0.8;		 
+		World.Add(make_shared<Sphere>(position - Vector3(0, position.x()*0.3, 0), 0.04, make_shared<Metal>(Vector3(1,1 , 1),0.01)));
+		position = Vector3(0, 0, 4) + dir ;		
+		World.Add(make_shared<Sphere>(position - Vector3(0,position.x()*0.3,0) , 0.04, make_shared<Dielectric>(1.5)));
+	}
+	for(int i=-5; i<15;i++)
+		for (int j = 0; j < 10; j++)
+		{
+			double MaterialProbability = RandomDouble();
+			Vector3 center(i + RandomDouble()*0.9, -0.44, j + RandomDouble()*0.9);
+			if ((center - Vector3(0, 0, 4)).SqrdLength() > 0.25 && (center - Vector3(0, -0.38, 0.5)).SqrdLength() > 0.25)
+			{
+				if(MaterialProbability < 0.6)
+					World.Add(make_shared<Sphere>(center, 0.06, make_shared<Lambertian>(Vector3(RandomDouble(), RandomDouble(), RandomDouble()))));
+				else if(MaterialProbability < 0.8)
+					World.Add(make_shared<Sphere>(center, 0.06, make_shared<Metal>(Vector3(RandomDouble(), RandomDouble(), RandomDouble()),RandomDouble())));
+				else
+					World.Add(make_shared<Sphere>(center, 0.06, make_shared<Dielectric>(1.5)));
+			}
+		}
+
 	return World;
 }
 
@@ -87,7 +112,7 @@ Vector3 ColorAtRay(const Ray& ray, HitableList& world, int depth)
 		return Vector3(0, 0, 0);
 
 	HitRecord hitRecord;
-	if (world.isHit(ray, 0.01, DBL_MAX, hitRecord))
+	if (world.isHit(ray, 0.001, DBL_MAX, hitRecord))
 	{
 		Vector3 Attenuation;
 		Ray ScatteredRay;
@@ -139,9 +164,9 @@ void RenderImage(int ThreadIndex, HitableList& World, Camera& cam)
 			}
 			color /= (double)Samples;
 			finalBuffer[y][x] = Vector3(sqrt(color.r()), sqrt(color.g()), sqrt(color.b()));	
-			finalBuffer[y][x].SetValues(255 * Clamp(finalBuffer[y][x].r(), 0, 0.999),
-										255 * Clamp(finalBuffer[y][x].g(), 0, 0.999),
-										255 * Clamp(finalBuffer[y][x].b(), 0, 0.999));			
+			finalBuffer[y][x].SetValues(256 * Clamp(finalBuffer[y][x].r(), 0, .999),
+										256 * Clamp(finalBuffer[y][x].g(), 0, .999),
+										256 * Clamp(finalBuffer[y][x].b(), 0, .999));			
 		}		
 	} 
 }
