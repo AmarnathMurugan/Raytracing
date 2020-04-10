@@ -31,7 +31,10 @@
 		double halfWidth = AspectRatio * halfHeight;
 		Origin = LookFrom;		
 		this->w = (LookFrom - LookAt).normalized();
+		if (w == ViewUp)
+			ViewUp = Vector3(0, 0, 1);
 		this->u = Cross(ViewUp,w).normalized();
+
 		this->v = Cross(w, u);
 		LowerLeftCorner = Origin - halfWidth * focalDistance * u - halfHeight * focalDistance * v - focalDistance * w;
 		Horizontal = 2 * halfWidth * focalDistance * u;

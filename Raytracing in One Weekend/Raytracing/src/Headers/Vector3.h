@@ -75,6 +75,7 @@
 	inline Vector3 Vector3::normalized() const
 	{
 		double len = this->length();
+		if (len == 0) return Vector3(0, 0, 0);
 		return Vector3(this->values[0] / len, this->values[1] / len, this->values[2] / len);
 	}
 
@@ -82,6 +83,9 @@
 	{
 		double len = this->length();
 		for (int i = 0; i < 3; i++)
+			if (len == 0)
+				this->values[i] = 0;
+			else
 			this->values[i] /= len;
 	}
 
