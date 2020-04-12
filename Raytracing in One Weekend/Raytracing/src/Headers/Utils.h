@@ -55,10 +55,12 @@ Vector3 RandomPointInUnitCircle()
 	return point;
 }
 
-Vector3 DirectionAtAngle(double angle)
+void DirectionAtAngle(double angle,double &x, double &y)
 {
 	double theta = angle * M_PI / 180;
-	return Vector3(sin(theta), 0 , -cos(theta));
+	x = cos(theta);
+	y = sin(theta);
+	//return Vector3(sin(theta), 0 , -cos(theta));
 }
 
 double Clamp(double value, double min, double max)

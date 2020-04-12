@@ -17,7 +17,7 @@
 #pragma region PUBLIC_VARIABLES
 	const int imageWidth = 1920;
 	const int imageHeight = 1080;
-	const int Samples = 800;
+	const int Samples = 300;
 	const int MaxDepth = 200;
 
 	const int NumberOfThreads = std::thread::hardware_concurrency();
@@ -77,9 +77,13 @@ HitableList GetWorld()
 	HitableList World(make_shared<Sphere>(Vector3(0, -1000.5, 4), 1000, make_shared<Lambertian>(Vector3(0.7, 0.7, 0.7))));	
 	World.Add(make_shared<Sphere>(Vector3(0, 0, 4), 0.5, make_shared<Lambertian>(Vector3(0.2, 1.5, 2)))); 
 	int NumberOfSpheresInCircle = 18;
+	double x, z;
+	Vector3 dir;
 	for (int i = 0; i < NumberOfSpheresInCircle; i++)
-	{
-		Vector3 dir = DirectionAtAngle(i * 360 / NumberOfSpheresInCircle);
+	{		
+		DirectionAtAngle(i * 360 / NumberOfSpheresInCircle,z,x);
+		z *= -1;
+		dir.SetValues(x, 0, z);
 		Vector3 position = Vector3(0, 0, 4) + dir * 0.6;
 		World.Add(make_shared<Sphere>(position - Vector3(0, position.x()*0.3, 0), 0.04, make_shared<Lambertian>(Vector3(0.045, 1.1, .5))));
 	    position = Vector3(0, 0, 4) + dir * 0.8;		 
