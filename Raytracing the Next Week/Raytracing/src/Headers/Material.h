@@ -32,7 +32,7 @@
 	bool Lambertian::scatter(const Ray& SourceRay, const HitRecord & hitRecord, Vector3& attenuation, Ray & scatteredRay) const
 	{
 		Vector3 target = hitRecord.HitPoint + hitRecord.Normal + RandomPointOnUnitSphere();
-		scatteredRay = Ray(hitRecord.HitPoint, (target - hitRecord.HitPoint));
+		scatteredRay = Ray(hitRecord.HitPoint, (target - hitRecord.HitPoint),SourceRay.Time());
 		attenuation = this->Albedo;
 		return true;
 	}
@@ -55,7 +55,7 @@
 	{
 	 
 		Vector3 ReflectedRay = ReflectVector(SourceRay.Ray_Direction().normalized() , hitRecord.Normal);
-		scatteredRay = Ray(hitRecord.HitPoint, ReflectedRay+ this->fuzziness * RandomPointInUnitSphere());
+		scatteredRay = Ray(hitRecord.HitPoint, ReflectedRay+ this->fuzziness * RandomPointInUnitSphere(), SourceRay.Time());
 		attenuation = this->Albedo;
 		return (DotProduct(scatteredRay.Ray_Direction(), hitRecord.Normal) > 0);
 	}
@@ -90,7 +90,7 @@
 		
 		if (NiOverNt*SinThetaIncident > 1.0)
 		{
-			scatteredRay = Ray(hitRecord.HitPoint, reflectedDirection);
+			scatteredRay = Ray(hitRecord.HitPoint, reflectedDirection, SourceRay.Time());
 			return true;
 		}
 	 
@@ -99,13 +99,13 @@
 		 
 		if (RandomDouble() < ReflectionProbability)
 		{
-			scatteredRay = Ray(hitRecord.HitPoint, reflectedDirection);
+			scatteredRay = Ray(hitRecord.HitPoint, reflectedDirection, SourceRay.Time());
 			return true;
 		}
 		else
 		{
 			Vector3 RefractedRayDirection = RefractRay(SourceRay.Ray_Direction(), NiOverNt, hitRecord.Normal);
-			scatteredRay = Ray(hitRecord.HitPoint, RefractedRayDirection);
+			scatteredRay = Ray(hitRecord.HitPoint, RefractedRayDirection, SourceRay.Time());
 			return true;
 		}
 	 

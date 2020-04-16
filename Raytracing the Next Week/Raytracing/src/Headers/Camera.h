@@ -7,7 +7,7 @@
 	class Camera
 	{
 		public:
-			Camera(double vFov, double aspect,double aperture, double focalDistance, Vector3 LookFrom, Vector3 LookAt, Vector3 ViewUp);
+			Camera(double vFov, double aspect,double aperture, double focalDistance, Vector3 LookFrom, Vector3 LookAt, Vector3 ViewUp, double StartTime, double EndTime);
 			
 			Ray GetRayAtUV(double U, double V);
 	
@@ -20,9 +20,10 @@
 		double VerticalFov;
 		double AspectRatio;
 		double LensRadius;
+		double startTime, endTime;
 	};
 
-	Camera::Camera(double vFov, double aspect, double aperture, double focalDistance, Vector3 LookFrom, Vector3 LookAt, Vector3 ViewUp)
+	Camera::Camera(double vFov, double aspect, double aperture, double focalDistance, Vector3 LookFrom, Vector3 LookAt, Vector3 ViewUp, double StartTime, double EndTime)
 	{
 		VerticalFov = vFov * M_PI/(double)180;
 		AspectRatio = aspect;
@@ -34,18 +35,19 @@
 		if (w == ViewUp)
 			ViewUp = Vector3(0, 0, 1);
 		this->u = Cross(ViewUp,w).normalized();
-
 		this->v = Cross(w, u);
 		LowerLeftCorner = Origin - halfWidth * focalDistance * u - halfHeight * focalDistance * v - focalDistance * w;
 		Horizontal = 2 * halfWidth * focalDistance * u;
 		Vertical = 2 * halfHeight * focalDistance * v;
+		this->startTime = StartTime;
+		this->endTime = EndTime;
 	}
 
 	inline Ray Camera::GetRayAtUV(double U, double V)
 	{
 		Vector3 RandomPointInLens = this->LensRadius * RandomPointInUnitCircle();
 		Vector3 Offset = RandomPointInLens.x() * this->u + RandomPointInLens.y() * this->v;
-		return Ray(Origin + Offset, LowerLeftCorner + U * Horizontal + V * Vertical - Origin - Offset);
+		return Ray(Origin + Offset, LowerLeftCorner + U * Horizontal + V * Vertical - Origin - Offset,RandomDouble(startTime,endTime));
 	}
  
 

@@ -7,12 +7,14 @@
 	{
 		public:
 			Ray();
-			Ray(const Vector3& startPoint, const Vector3& rayDirection) : StartPoint{ startPoint }, RayDirection{ rayDirection }{}
+			Ray(const Vector3& startPoint, const Vector3& rayDirection, double timeArg = 0) : StartPoint{ startPoint }, RayDirection{ rayDirection }, time{timeArg}{}
 			Vector3 Start_Point() const { return StartPoint; }
 			Vector3 Ray_Direction() const { return RayDirection; }
 			Vector3 Point_On_Ray(double t) const;
+			double Time() const { return time; }
 		private:
 			Vector3 StartPoint, RayDirection;
+			double time;
 	};
 
 	Ray::Ray()

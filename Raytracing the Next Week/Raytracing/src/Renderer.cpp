@@ -1,5 +1,6 @@
 #include "Headers/Hitable_list.h"
 #include "Headers/Sphere.h"
+#include "Headers/MovableSphere.h"
 #include "Headers/Camera.h"
 #include "Headers/Material.h"
 #include <thread>
@@ -15,9 +16,9 @@
 #pragma endregion
 	   
 #pragma region PUBLIC_VARIABLES
-	const int imageWidth = 200;
-	const int imageHeight = 100;
-	const int Samples = 100;
+	const int imageWidth = 400;
+	const int imageHeight = 200;
+	const int Samples = 150;
 	const int MaxDepth = 200;
 
 	const int NumberOfThreads = std::thread::hardware_concurrency();
@@ -39,7 +40,7 @@ int main()
 	Vector3 ViewUp(0, 1, 0);
 	double focalDistance = (LookFrom - LookAt).length();
 	double aperture = 0.02;
-	Camera cam(35,(imageWidth/(double)imageHeight),aperture,focalDistance,LookFrom,LookAt,ViewUp);
+	Camera cam(35,(imageWidth/(double)imageHeight),aperture,focalDistance,LookFrom,LookAt,ViewUp,0,1);
 	
 	HitableList World = GetWorld();
 
@@ -79,33 +80,35 @@ HitableList GetWorld()
 	int NumberOfSpheresInCircle = 18;
 	double x, z;
 	Vector3 dir;
-	for (int i = 0; i < NumberOfSpheresInCircle; i++)
-	{		
-		DirectionAtAngle(i * 360 / NumberOfSpheresInCircle,z,x);
-		z *= -1;
-		dir.SetValues(x, 0, z);
-		Vector3 position = Vector3(0, 0, 4) + dir * 0.6;
-		World.Add(make_shared<Sphere>(position - Vector3(0, position.x()*0.3, 0), 0.04, make_shared<Lambertian>(Vector3(0.045, 1.1, .5))));
-	    position = Vector3(0, 0, 4) + dir * 0.8;		 
-		/*World.Add(make_shared<Sphere>(position - Vector3(0, position.x()*0.3, 0), 0.04, make_shared<Metal>(Vector3(1,1 , 1),0.01)));
-		position = Vector3(0, 0, 4) + dir ;		
-		World.Add(make_shared<Sphere>(position - Vector3(0,position.x()*0.3,0) , 0.04, make_shared<Dielectric>(1.5)));*/
-	}
-	//for(int i=-5; i<15;i++)
-	//	for (int j = 0; j < 10; j++)
-	//	{
-	//		double MaterialProbability = RandomDouble();
-	//		Vector3 center(i + RandomDouble()*0.9, -0.44, j + RandomDouble()*0.9);
-	//		if ((center - Vector3(0, 0, 4)).SqrdLength() > 0.25 && (center - Vector3(0, -0.38, 0.5)).SqrdLength() > 0.25)
-	//		{
-	//			if(MaterialProbability < 0.6)
-	//				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Lambertian>(Vector3(RandomDouble(), RandomDouble(), RandomDouble()))));
-	//			else if(MaterialProbability < 0.8)
-	//				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Metal>(Vector3(RandomDouble(), RandomDouble(), RandomDouble()),RandomDouble())));
-	//			else
-	//				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Dielectric>(1.5)));
-	//		}
-	//	}
+	//for (int i = 0; i < NumberOfSpheresInCircle; i++)
+	//{		
+	//	DirectionAtAngle(i * 360 / NumberOfSpheresInCircle,z,x);
+	//	z *= -1;
+	//	dir.SetValues(x, 0, z);
+	//	Vector3 position = Vector3(0, 0, 4) + dir * 0.6;
+	//	World.Add(make_shared<Sphere>(position - Vector3(0, position.x()*0.3, 0), 0.04, make_shared<Lambertian>(Vector3(0.045, 1.1, .5))));
+	//    position = Vector3(0, 0, 4) + dir * 0.8;		 
+	//	World.Add(make_shared<Sphere>(position - Vector3(0, position.x()*0.3, 0), 0.04, make_shared<Metal>(Vector3(1,1 , 1),0.01)));
+	//	position = Vector3(0, 0, 4) + dir ;		
+	//	World.Add(make_shared<Sphere>(position - Vector3(0,position.x()*0.3,0) , 0.04, make_shared<Dielectric>(1.5)));
+	//}
+	for(int i=-5; i<15;i++)
+		for (int j = 0; j < 10; j++)
+		{
+			double MaterialProbability = RandomDouble();
+			Vector3 center(i + RandomDouble()*0.9, -0.44, j + RandomDouble()*0.9);
+			Vector3 End = center + Vector3(0, RandomDouble(0,0.45), 0);
+			if ((center - Vector3(0, 0, 4)).SqrdLength() > 0.25 && (center - Vector3(0, -0.38, 0.5)).SqrdLength() > 0.25)
+			{
+				World.Add(make_shared<MovableSphere>(center,End, 0.06, make_shared<Lambertian>(Vector3(RandomDouble(), RandomDouble(), RandomDouble()))));
+				/*if(MaterialProbability < 0.6)
+					World.Add(make_shared<Sphere>(center, 0.06, make_shared<Lambertian>(Vector3(RandomDouble(), RandomDouble(), RandomDouble()))));
+				else if(MaterialProbability < 0.8)
+					World.Add(make_shared<Sphere>(center, 0.06, make_shared<Metal>(Vector3(RandomDouble(), RandomDouble(), RandomDouble()),RandomDouble())));
+				else
+					World.Add(make_shared<Sphere>(center, 0.06, make_shared<Dielectric>(1.5)));*/
+			}
+		}
 
 	return World;
 }
