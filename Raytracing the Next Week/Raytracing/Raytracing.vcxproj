@@ -136,6 +136,8 @@
     <ClCompile Include="src\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Headers\aabb.h" />
+    <ClInclude Include="src\Headers\bvh_node.h" />
     <ClInclude Include="src\Headers\Camera.h" />
     <ClInclude Include="src\Headers\Hitable.h" />
     <ClInclude Include="src\Headers\Hitable_list.h" />
