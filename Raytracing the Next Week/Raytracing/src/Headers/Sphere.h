@@ -14,7 +14,7 @@
 		
 		Sphere(Vector3 center, double radius, shared_ptr<Material> m) : Center(center), Radius(radius), mat(m) {}
 		virtual bool isHit(const Ray& ray, double t_min, double t_max, HitRecord& hitRecord) const;
-
+		virtual bool GetBoundingBox(double time1, double time2, aabb& OutputBox) const;
  
 
 	};
@@ -54,9 +54,11 @@
 		
 	}
 
-	 
-
- 
+	bool Sphere::GetBoundingBox(double time1, double time2, aabb& OutputBox) const
+	{
+		OutputBox = aabb(Center - Vector3(this->Radius, this->Radius, this->Radius), Center + Vector3(this->Radius, this->Radius, this->Radius));
+		return true;
+	}
 
 #endif // !SPHERE_H_
 

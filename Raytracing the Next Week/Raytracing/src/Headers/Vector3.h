@@ -45,7 +45,7 @@
 			friend inline std::istream& operator >>(std::istream &is, Vector3 & v1);
 
 
-	private:
+	public:
 			double values[3];
 
 	};

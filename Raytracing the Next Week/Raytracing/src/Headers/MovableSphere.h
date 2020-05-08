@@ -16,7 +16,7 @@ public:
 	MovableSphere(Vector3 StartPos,Vector3 EndPos, double radius, std::shared_ptr<Material> m) : StartCenter(StartPos), EndCenter(EndPos), Radius(radius), mat(m) {}
 	virtual bool isHit(const Ray& ray, double t_min, double t_max, HitRecord& hitRecord) const;
 	Vector3 GetCenterAtTime(double t) const;
-
+	virtual bool GetBoundingBox(double time1, double time2, aabb& OutputBox) const;
 };
 
 
@@ -57,6 +57,14 @@ bool MovableSphere::isHit(const Ray & ray, double t_min, double t_max, HitRecord
 inline Vector3 MovableSphere::GetCenterAtTime(double t) const
 {
 	return ((1 - t)*StartCenter +( t * EndCenter));
+}
+
+bool MovableSphere::GetBoundingBox(double time1, double time2, aabb& OutputBox) const
+{
+	aabb box1(GetCenterAtTime(time1) - Vector3(this->Radius, this->Radius, this->Radius), GetCenterAtTime(time1) + Vector3(this->Radius, this->Radius, this->Radius));
+	aabb box2(GetCenterAtTime(time2) - Vector3(this->Radius, this->Radius, this->Radius), GetCenterAtTime(time2) + Vector3(this->Radius, this->Radius, this->Radius));
+	OutputBox = EnclosingBox(box1, box2);
+	return true;
 }
 
 #endif // !MOVABLESPHERE_H_

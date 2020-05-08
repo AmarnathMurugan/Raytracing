@@ -2,7 +2,8 @@
 #define HITABLE_H_
 
 #include "Ray.h"
-	
+#include "aabb.h"
+
 	class Material;
 
 	struct HitRecord
@@ -24,6 +25,7 @@
 	{
 		public:
 			virtual bool isHit(const Ray& ray, double t_min, double t_max, HitRecord& hitRecord) const = 0;
+			virtual bool GetBoundingBox(double time1, double time2, aabb& OutputBox) const = 0;
 	};
 
 #endif // !HITABLE_H_

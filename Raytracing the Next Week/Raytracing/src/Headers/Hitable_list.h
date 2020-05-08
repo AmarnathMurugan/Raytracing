@@ -17,7 +17,7 @@ using std::make_shared;
 		void Clear() { Objects.clear(); }
 
 		virtual bool isHit(const Ray& ray, double t_min, double t_max, HitRecord& hitRecord) const;
-		
+		virtual bool GetBoundingBox(double time1, double time2, aabb& OutputBox) const ;
 		
 
 	public:
@@ -44,6 +44,22 @@ using std::make_shared;
 		return isAnythingHit;
 	}
 
+	bool HitableList::GetBoundingBox(double time1, double time2, aabb& OutputBox) const
+	{
+		if (Objects.empty()) return false;
+		aabb tempBox;
+		bool firstTrue = Objects[0]->GetBoundingBox(time1, time2, tempBox);
+		if (!firstTrue)
+			return false;
+		OutputBox = tempBox;
+		for (const auto& obj : Objects)
+		{
+			if (!obj->GetBoundingBox(time1, time2, tempBox))
+				return false;
+			OutputBox = EnclosingBox(OutputBox, tempBox);
+		}
+		return true;
+	}
 
 
 #endif // !HITABLE_LIST_H_
