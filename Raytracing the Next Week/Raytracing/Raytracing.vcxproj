@@ -145,6 +145,7 @@
     <ClInclude Include="src\Headers\MovableSphere.h" />
     <ClInclude Include="src\Headers\Ray.h" />
     <ClInclude Include="src\Headers\Sphere.h" />
+    <ClInclude Include="src\Headers\Texture.h" />
     <ClInclude Include="src\Headers\Utils.h" />
     <ClInclude Include="src\Headers\Vector3.h" />
   </ItemGroup>
