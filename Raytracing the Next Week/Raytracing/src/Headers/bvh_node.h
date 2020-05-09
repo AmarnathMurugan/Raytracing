@@ -66,7 +66,7 @@ inline bool box_compare(const std::shared_ptr<Hitable> a, const std::shared_ptr<
 	aabb box_a, box_b;
 	if (!a->GetBoundingBox(0, 0, box_a) || !b->GetBoundingBox(0, 0, box_b))
 		std::cerr << "No bounding box in BVH constructor";
-	return box_a.min().values[axis] < box_b.min().values[axis];
+	return box_a.min()[axis] < box_b.min()[axis];
 }
 
 bool box_x_compare(const std::shared_ptr<Hitable> a, const std::shared_ptr<Hitable> b)
