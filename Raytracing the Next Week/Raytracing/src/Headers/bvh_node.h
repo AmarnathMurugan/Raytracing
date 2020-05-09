@@ -96,7 +96,7 @@ inline bool bvh_node::isHit(const Ray & ray, double t_min, double t_max, HitReco
 		return false;
 	bool isLeft = left->isHit(ray, t_min, t_max,hitRecord);
 	bool isRight = right->isHit(ray, t_min, isLeft?hitRecord.t:t_max, hitRecord);
-	return true;
+	return isLeft||isRight;
 }
 
 #endif // !BVH_NODE

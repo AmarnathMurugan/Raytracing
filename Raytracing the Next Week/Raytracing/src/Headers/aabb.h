@@ -23,7 +23,7 @@ bool aabb::hit(const Ray &ray, double tmin, double tmax) const
 	double denominator, minimum, maximum, t0, t1;
 	for (int i = 0; i < 3; i++)
 	{
-		denominator = 1 / ray.Ray_Direction()[i];
+		denominator = 1.0 / ray.Ray_Direction()[i];
 		t0 = (this->min()[i] - ray.Start_Point()[i])*denominator;
 		t1 = (this->max()[i] - ray.Start_Point()[i])*denominator;
 		if (denominator < 0) std::swap(t0, t1);
@@ -37,7 +37,7 @@ bool aabb::hit(const Ray &ray, double tmin, double tmax) const
 aabb EnclosingBox(const aabb& box1, const aabb& box2)
 {
 	Vector3 minimumValues(ffmin(box1.min()[0], box2.min()[0]), ffmin(box1.min()[1], box2.min()[1]), ffmin(box1.min()[2], box2.min()[2]));
-	Vector3 maximumValues(ffmin(box1.max()[0], box2.max()[0]), ffmin(box1.max()[1], box2.max()[1]), ffmin(box1.max()[2], box2.max()[2]));
+	Vector3 maximumValues(ffmax(box1.max()[0], box2.max()[0]), ffmax(box1.max()[1], box2.max()[1]), ffmax(box1.max()[2], box2.max()[2]));
 	return aabb(minimumValues, maximumValues);
 }
 
