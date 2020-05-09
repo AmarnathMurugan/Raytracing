@@ -3,7 +3,7 @@
 
 #include "Hitable.h"
 #include "Utils.h"
-
+#include "Texture.h"
 	double GetReflectionProbability(double RefIndx, double Cos);
 
 	//====== BASE CLASS =====
@@ -21,11 +21,11 @@
 	{
 	public:
 		
-		Lambertian(const Vector3& a) : Albedo(a) {}
+		Lambertian(shared_ptr<Texture> a) : Albedo(a) {}
 		virtual bool scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay) const;
 		
-		Vector3 Albedo;
-
+		shared_ptr<Texture> Albedo;
+		
 	};
 
 
@@ -33,7 +33,7 @@
 	{
 		Vector3 target = hitRecord.HitPoint + hitRecord.Normal + RandomPointOnUnitSphere();
 		scatteredRay = Ray(hitRecord.HitPoint, (target - hitRecord.HitPoint),SourceRay.Time());
-		attenuation = this->Albedo;
+		attenuation = Albedo->Value(hitRecord.U,hitRecord.V,hitRecord.HitPoint);
 		return true;
 	}
 

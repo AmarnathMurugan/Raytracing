@@ -16,9 +16,9 @@
 #pragma endregion
 	   
 #pragma region PUBLIC_VARIABLES
-	const int imageWidth = 200;
-	const int imageHeight = 100;
-	const int Samples = 100;
+	const int imageWidth = 400;
+	const int imageHeight = 200;
+	const int Samples = 150;
 	const int MaxDepth = 200;
 
 	const int NumberOfThreads = std::thread::hardware_concurrency();
@@ -35,7 +35,7 @@ int main()
 	std::cout << "P3\n";
 	std::cout << imageWidth << " " << imageHeight << "\n255\n"; 
 
-	Vector3 LookFrom(0, -0.38, 0.5);
+	Vector3 LookFrom(0, 0.5, 0.7);
 	Vector3 LookAt(0, 0, 4);
 	Vector3 ViewUp(0, 1, 0);
 	double focalDistance = (LookFrom - LookAt).length();
@@ -75,8 +75,9 @@ int main()
 
 HitableList GetWorld()
 {
-	HitableList World(make_shared<Sphere>(Vector3(0, -1000.5, 4), 1000, make_shared<Lambertian>(Vector3(0.7, 0.7, 0.7))));	
-	World.Add(make_shared<Sphere>(Vector3(0, 0, 4), 0.5, make_shared<Lambertian>(Vector3(0.2, 1.5, 2)))); 
+	auto checTex = make_shared<CheckeredTexture>(make_shared<ConstantTexture>(Vector3(1, 1, 1)), make_shared<ConstantTexture>(Vector3(.3, .3, .3)));
+	HitableList World(make_shared<Sphere>(Vector3(0, -1000.5, 4), 1000, make_shared<Lambertian>(checTex)));
+	World.Add(make_shared<Sphere>(Vector3(0, 0, 4), 0.5, make_shared<Dielectric>(1.5)));
 	int NumberOfSpheresInCircle = 18;
 	double x, z;
 	Vector3 dir;
@@ -92,26 +93,26 @@ HitableList GetWorld()
 	//	position = Vector3(0, 0, 4) + dir ;		
 	//	World.Add(make_shared<Sphere>(position - Vector3(0,position.x()*0.3,0) , 0.04, make_shared<Dielectric>(1.5)));
 	//}
-	for(int i=-5; i<15;i++)
-		for (int j = 0; j < 10; j++)
-		{
-			double MaterialProbability = RandomDouble();
-			Vector3 center(i + RandomDouble()*0.9, -0.44, j + RandomDouble()*0.9);
-			Vector3 End = center + Vector3(0, RandomDouble(0,0.45), 0);
-			if ((center - Vector3(0, 0, 4)).SqrdLength() > 0.25 && (center - Vector3(0, -0.38, 0.5)).SqrdLength() > 0.25)
-			{
-				
-				if(MaterialProbability < 0.6)
-					World.Add(make_shared<Sphere>(center, 0.06, make_shared<Lambertian>(Vector3(RandomDouble(), RandomDouble(), RandomDouble()))));
-				else if(MaterialProbability < 0.8)
-					World.Add(make_shared<Sphere>(center, 0.06, make_shared<Metal>(Vector3(RandomDouble(), RandomDouble(), RandomDouble()),RandomDouble())));
-				else
-					World.Add(make_shared<Sphere>(center, 0.06, make_shared<Dielectric>(1.5)));
-			}
-		}
+	//for(int i=-5; i<15;i++)
+	//	for (int j = 0; j < 10; j++)
+	//	{
+	//		double MaterialProbability = RandomDouble();
+	//		Vector3 center(i + RandomDouble()*0.9, -0.44, j + RandomDouble()*0.9);
+	//		Vector3 End = center + Vector3(0, RandomDouble(0,0.45), 0);
+	//		if ((center - Vector3(0, 0, 4)).SqrdLength() > 0.25 && (center - Vector3(0, -0.38, 0.5)).SqrdLength() > 0.25)
+	//		{
+	//			
+	//			if(MaterialProbability < 0.6)
+	//				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(RandomDouble(), RandomDouble(), RandomDouble())))));
+	//			else if(MaterialProbability < 0.8)
+	//				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Metal>(Vector3(RandomDouble(), RandomDouble(), RandomDouble()),RandomDouble())));
+	//			else
+	//				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Dielectric>(1.5)));
+	//		}
+	//	}
 
-	return World;
-	//return HitableList(make_shared<bvh_node>(World,0,1));
+	 
+	return HitableList(make_shared<bvh_node>(World,0,1));
 }
 
 Vector3 ColorAtRay(const Ray& ray, HitableList& world, int depth)

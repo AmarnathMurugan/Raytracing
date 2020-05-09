@@ -8,7 +8,7 @@
 
 	struct HitRecord
 	{
-		double t;
+		double t,U,V;
 		Vector3 HitPoint;
 		Vector3 Normal;
 		bool isFrontFace;
