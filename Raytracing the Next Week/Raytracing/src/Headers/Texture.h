@@ -1,7 +1,8 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-	#include "Vector3.h"
+	
+	#include "Perlin.h"
 	class Texture
 	{
 	public:
@@ -40,6 +41,22 @@
 		public:
 			shared_ptr<Texture> odd, even;
 	};
+
+	class PerlinTexture : public Texture
+	{
+	public:
+		 
+		virtual Vector3 Value(double U, double V, const Vector3& p) const
+		{			 
+			double value = noise.PerlinNoise(p);
+			return Vector3(value, value, value);
+		}
+
+	private:
+		Perlin noise;
+	};
+
+	 
 
 	 
 #endif // !TEXTURE_H

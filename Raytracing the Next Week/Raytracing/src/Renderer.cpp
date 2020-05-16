@@ -16,8 +16,8 @@
 #pragma endregion
 	   
 #pragma region PUBLIC_VARIABLES
-	const int imageWidth = 400;
-	const int imageHeight = 200;
+	const int imageWidth = 200;
+	const int imageHeight = 100;
 	const int Samples = 150;
 	const int MaxDepth = 200;
 
@@ -75,9 +75,10 @@ int main()
 
 HitableList GetWorld()
 {
-	auto checTex = make_shared<CheckeredTexture>(make_shared<ConstantTexture>(Vector3(1, 1, 1)), make_shared<ConstantTexture>(Vector3(.3, .3, .3)));
+	//auto checTex = make_shared<CheckeredTexture>(make_shared<ConstantTexture>(Vector3(1, 1, 1)), make_shared<ConstantTexture>(Vector3(.3, .3, .3)));
+	auto checTex = make_shared<PerlinTexture>();
 	HitableList World(make_shared<Sphere>(Vector3(0, -1000.5, 4), 1000, make_shared<Lambertian>(checTex)));
-	World.Add(make_shared<Sphere>(Vector3(0, 0, 4), 0.5, make_shared<Dielectric>(1.5)));
+	World.Add(make_shared<Sphere>(Vector3(0, 0, 4), 0.5, make_shared<Lambertian>(checTex)));
 	int NumberOfSpheresInCircle = 18;
 	double x, z;
 	Vector3 dir;

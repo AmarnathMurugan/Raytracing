@@ -18,12 +18,16 @@ inline double RandomDouble()
 	static std::mt19937 generator;
 	static std::function<double()> rand_generator = std::bind(distribution, generator);
 	return rand_generator();
-	//return ((float)rand() / RAND_MAX);
 }
 
 inline double RandomDouble(double min, double max)
 {
 	return min + (max - min)*RandomDouble();
+}
+
+inline int RandomInt(int min, int max)
+{
+	return static_cast<int>(RandomDouble(min, max));
 }
 
 Vector3 RandomPointInUnitSphere()
@@ -35,7 +39,6 @@ Vector3 RandomPointInUnitSphere()
 	} while (point.SqrdLength() >= 1);
 	return point;
 }
-
 
 Vector3 RandomPointOnUnitSphere()
 {
@@ -60,7 +63,6 @@ void DirectionAtAngle(double angle,double &x, double &y)
 	double theta = angle * M_PI / 180;
 	x = cos(theta);
 	y = sin(theta);
-	//return Vector3(sin(theta), 0 , -cos(theta));
 }
 
 double Clamp(double value, double min, double max)
