@@ -79,5 +79,6 @@ double Remap(double value, double Start1, double End1, double Start2, double End
 
 inline double ffmin(double a, double b) {return a >= b ? b : a; }
 inline double ffmax(double a, double b) {return a >= b ? a : b; }
+inline double SmoothStep(double t) { return (t*t*(3 - 2 * t)); }
 #endif // !UTILS_H_
 
