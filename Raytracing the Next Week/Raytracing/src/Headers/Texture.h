@@ -45,15 +45,28 @@
 	class PerlinTexture : public Texture
 	{
 	public:
-		 
+		enum NoiseType
+		{
+			PerlinNoise,TurbulentNoise,MarbleNoise
+		};
+		PerlinTexture(double scale = 1,double layers=5, NoiseType type=NoiseType::PerlinNoise) :Scale(scale),Layers(layers),noiseType(type) {}
 		virtual Vector3 Value(double U, double V, const Vector3& p) const
-		{			 
-			double value = noise.PerlinNoise(p);
-			return Vector3(value, value, value);
+		{ 	
+			switch (noiseType)			
+			{
+				case NoiseType::PerlinNoise:
+					return Vector3(1, 1, 1)*0.5*(1+ noise.PerlinNoise(Scale * p));
+				case NoiseType::TurbulentNoise:
+					return Vector3(1, 1, 1) * noise.turbulentNoise(Scale * p,Layers);		
+				case NoiseType::MarbleNoise:
+					return Vector3(1, 1, 1) * 0.5 * (1 + sin(Scale*p.z() + 10 * noise.turbulentNoise(p, Layers)));				
+			}
 		}
 
 	private:
 		Perlin noise;
+		NoiseType noiseType;
+		double Scale,Layers;
 	};
 
 	 

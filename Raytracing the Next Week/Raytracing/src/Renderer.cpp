@@ -18,7 +18,7 @@
 #pragma region PUBLIC_VARIABLES
 	const int imageWidth = 200;
 	const int imageHeight = 100;
-	const int Samples = 150;
+	const int Samples = 200;
 	const int MaxDepth = 200;
 
 	const int NumberOfThreads = std::thread::hardware_concurrency();
@@ -76,8 +76,7 @@ int main()
 HitableList GetWorld()
 {
 	//auto checTex = make_shared<CheckeredTexture>(make_shared<ConstantTexture>(Vector3(1, 1, 1)), make_shared<ConstantTexture>(Vector3(.3, .3, .3)));
-	auto checTex = make_shared<PerlinTexture>();
-	HitableList World(make_shared<Sphere>(Vector3(0, -1000.5, 4), 1000, make_shared<Lambertian>(checTex)));
+	auto checTex = make_shared<PerlinTexture>(8,7,PerlinTexture::NoiseType::MarbleNoise);	HitableList World(make_shared<Sphere>(Vector3(0, -1000.5, 4), 1000, make_shared<Lambertian>(checTex)));
 	World.Add(make_shared<Sphere>(Vector3(0, 0, 4), 0.5, make_shared<Lambertian>(checTex)));
 	int NumberOfSpheresInCircle = 18;
 	double x, z;
@@ -168,7 +167,7 @@ void RenderImage(int ThreadIndex, HitableList& World, Camera& cam)
 				double U = (x + RandomDouble()) / (double)imageWidth;
 				double V = (y + RandomDouble()) / (double)imageHeight;
 				Ray ray = cam.GetRayAtUV(U, V);
-				Vector3 SamplingColor = ColorAtRay(ray, World, MaxDepth);
+				Vector3 SamplingColor = ColorAtRay(ray, World, MaxDepth);			
 				double red = SamplingColor.r();
 				color += SamplingColor;
 			}
