@@ -40,7 +40,7 @@ int main()
 	std::cout << "P3\n";
 	std::cout << imageWidth << " " << imageHeight << "\n255\n"; 
 
-	Vector3 LookFrom(0, 1, -10);
+	Vector3 LookFrom(0, 10, -0.5);
 	Vector3 LookAt(0, 2, 0);
 	Vector3 ViewUp(0, 1, 0);
 	double focalDistance = (LookFrom - LookAt).length();
@@ -86,7 +86,7 @@ HitableList GetWorld()
 	int nx, ny, nn;
 	unsigned char* data = stbi_load("Textures\\earth.jpg",&nx,&ny,&nn,0);
 	if (stbi_failure_reason()) std::cerr << stbi_failure_reason();
-	auto imgTexture = make_shared<ImageTexture>(data, nx, ny);
+	auto imgTexture = make_shared<ImageTexture>(data, nx, ny,Vector3(0.25,0,0));
 
 	HitableList World(make_shared<Sphere>(Vector3(0, -1000, 0), 1000, make_shared<Lambertian>(NoiseTexture)));
 	World.Add(make_shared<Sphere>(Vector3(0, 2, 0), 2, make_shared<Lambertian>(imgTexture)));

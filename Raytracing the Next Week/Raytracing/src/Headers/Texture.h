@@ -75,13 +75,12 @@
 	class ImageTexture: public Texture
 	{
 	public:
-		ImageTexture(unsigned char* imgData, int x, int y, Vector3 offset) :pixels(imgData), size_x(x), size_y(y), Offset(offset) {}
+		ImageTexture(unsigned char* imgData, int x, int y,const Vector3& offset = Vector3(0,0,0)) :pixels(imgData), size_x(x), size_y(y), Offset(offset) {}
 		virtual Vector3 Value(double U, double V, const Vector3& p) const
 		{
 			if (pixels == nullptr) return Vector3(1, 0, 1);
-			//U = (U + Offset.x()) % 1;
-			int i = static_cast<int>((U)*size_x);
-			int j = static_cast<int>((1-V)*size_y-0.001);
+			int i = static_cast<int>((U+Offset.x())*size_x) % size_x;
+			int j = static_cast<int>((1-V+Offset.y())*size_y) % size_y;
 			if (i < 0) i = 0;
 			if (j < 0) j = 0;
 			if (i > size_x-1) i = size_x-1;
