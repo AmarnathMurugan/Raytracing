@@ -1,16 +1,19 @@
 #include "Headers/Hitable_list.h"
 #include "Headers/Sphere.h"
 #include "Headers/MovableSphere.h"
+#include "Headers/aarect.h"
 #include "Headers/Camera.h"
 #include "Headers/Material.h"
 #include "Headers/bvh_node.h"
+#include "Headers/rt_stb.h"
 #include <thread>
 #include <mutex>
 #include <chrono>
 
+
 #pragma region FUNCTION_SIGNATURES
 	HitableList GetWorld();
-	Vector3 ColorAtRay(const Ray& ray, HitableList& world, int depth);
+	Vector3 ColorAtRay(const Ray& ray, HitableList& world, int depth, bool isUseSkybox=true);
 	void GetChunkRange(int& Start, int& End);
 	void RenderImage(int ThreadIndex, HitableList& World, Camera& cam);
 #pragma endregion
@@ -28,6 +31,8 @@
 	Vector3 finalBuffer[imageHeight][imageWidth];
 	std::mutex ChunkRangeMutex;
 	bool isComplete = false;
+
+	const Vector3 BackgroundColor(0, 0, 0);
 #pragma endregion
 	   
 int main()
@@ -35,8 +40,8 @@ int main()
 	std::cout << "P3\n";
 	std::cout << imageWidth << " " << imageHeight << "\n255\n"; 
 
-	Vector3 LookFrom(0, 0.5, 0.7);
-	Vector3 LookAt(0, 0, 4);
+	Vector3 LookFrom(0, 1, -10);
+	Vector3 LookAt(0, 2, 0);
 	Vector3 ViewUp(0, 1, 0);
 	double focalDistance = (LookFrom - LookAt).length();
 	double aperture = 0.02;
@@ -53,7 +58,6 @@ int main()
 
 	for (std::thread &t : threads)
 		if (t.joinable()) t.join();
-	
 
 	for (int y = imageHeight - 1; y >= 0; --y)
 	{
@@ -75,9 +79,24 @@ int main()
 
 HitableList GetWorld()
 {
-	//auto checTex = make_shared<CheckeredTexture>(make_shared<ConstantTexture>(Vector3(1, 1, 1)), make_shared<ConstantTexture>(Vector3(.3, .3, .3)));
-	auto checTex = make_shared<PerlinTexture>(8,7,PerlinTexture::NoiseType::MarbleNoise);	HitableList World(make_shared<Sphere>(Vector3(0, -1000.5, 4), 1000, make_shared<Lambertian>(checTex)));
-	World.Add(make_shared<Sphere>(Vector3(0, 0, 4), 0.5, make_shared<Lambertian>(checTex)));
+	auto checTex = make_shared<CheckeredTexture>(make_shared<ConstantTexture>(Vector3(1, 1, 1)), make_shared<ConstantTexture>(Vector3(.3, .3, .3)));
+	auto NoiseTexture = make_shared<PerlinTexture>(8,7,PerlinTexture::NoiseType::MarbleNoise);	
+	auto LightMaterial = make_shared<DiffuseLight>(make_shared<ConstantTexture>(Vector3(4, 4, 4)));
+	
+	int nx, ny, nn;
+	unsigned char* data = stbi_load("Textures\\earth.jpg",&nx,&ny,&nn,0);
+	if (stbi_failure_reason()) std::cerr << stbi_failure_reason();
+	auto imgTexture = make_shared<ImageTexture>(data, nx, ny);
+
+	HitableList World(make_shared<Sphere>(Vector3(0, -1000, 0), 1000, make_shared<Lambertian>(NoiseTexture)));
+	World.Add(make_shared<Sphere>(Vector3(0, 2, 0), 2, make_shared<Lambertian>(imgTexture)));
+	//World.Add(make_shared<Sphere>(Vector3(4, 2, 0), 2, make_shared<Lambertian>(checTex)));
+	World.Add(make_shared<RectXY>(1, 3, 1, 3, 2.5, LightMaterial));
+	
+	/*HitableList World(make_shared<Sphere>(Vector3(0, -1001, 4), 1000, make_shared<Lambertian>(NoiseTexture)));
+	World.Add(make_shared<Sphere>(Vector3(0, 0, 4), 1, make_shared<Lambertian>(NoiseTexture)));
+	World.Add(make_shared<Sphere>(Vector3(0, 0, 4), 1, make_shared<Lambertian>(imgTexture)));
+	World.Add(make_shared<RectXY>(-0.4,0.4,-0.4,0.4,6, LightTexture));*/
 	int NumberOfSpheresInCircle = 18;
 	double x, z;
 	Vector3 dir;
@@ -115,22 +134,26 @@ HitableList GetWorld()
 	return HitableList(make_shared<bvh_node>(World,0,1));
 }
 
-Vector3 ColorAtRay(const Ray& ray, HitableList& world, int depth)
+Vector3 ColorAtRay(const Ray& ray, HitableList& world, int depth,  bool isUseSkybox)
 {
 	if (depth <= 0)
-		return Vector3(0, 0, 0);
+		return BackgroundColor;
 
 	HitRecord hitRecord;
 	if (world.isHit(ray, 0.001, DBL_MAX, hitRecord))
 	{
 		Vector3 Attenuation;
 		Ray ScatteredRay;
-		if ( hitRecord.mat_ptr->scatter(ray, hitRecord, Attenuation, ScatteredRay))
-			return Attenuation * ColorAtRay(ScatteredRay, world, depth - 1);	 
-		return Vector3(0, 0, 0);
+		Vector3 emmisionColor = hitRecord.mat_ptr->emit(hitRecord.U, hitRecord.V, hitRecord.HitPoint);
+		if (hitRecord.mat_ptr->scatter(ray, hitRecord, Attenuation, ScatteredRay))
+			return emmisionColor + Attenuation * ColorAtRay(ScatteredRay, world, depth - 1, isUseSkybox);
+		else
+			return emmisionColor;
 	}
 	else
 	{
+		if (!isUseSkybox)
+			return BackgroundColor;
 		Vector3 NormalizedDirection = ray.Ray_Direction().normalized();
 		double NormalizedY = 0.5*(NormalizedDirection.y() + 1);		
 		NormalizedY = Clamp(Remap(NormalizedY, 0.4, 0.6, 0, 1),0,1);
@@ -167,7 +190,7 @@ void RenderImage(int ThreadIndex, HitableList& World, Camera& cam)
 				double U = (x + RandomDouble()) / (double)imageWidth;
 				double V = (y + RandomDouble()) / (double)imageHeight;
 				Ray ray = cam.GetRayAtUV(U, V);
-				Vector3 SamplingColor = ColorAtRay(ray, World, MaxDepth);			
+				Vector3 SamplingColor = ColorAtRay(ray, World, MaxDepth,true);			
 				double red = SamplingColor.r();
 				color += SamplingColor;
 			}

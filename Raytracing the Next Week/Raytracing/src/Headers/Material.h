@@ -12,6 +12,7 @@
 	{
 		public:
 			virtual bool scatter(const Ray& SourceRay,const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay) const = 0;
+			virtual Vector3 emit(double U, double V, Vector3 &p) const { return Vector3(0, 0, 0); }
 	};
 
 
@@ -126,6 +127,22 @@
 		Vector3 Rperpendicular = -sqrt(1 - Rparallel.SqrdLength())*OutwardNormal;
 		return  (Rparallel + Rperpendicular);
 	}
+	
+	//====== DIFFUSE LIGHT ======
+
+	class DiffuseLight : public Material
+	{
+	public:
+		DiffuseLight(shared_ptr<Texture> tex) : EmmisionTexture(tex) {}
+		virtual bool scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay) const { return false; }
+		virtual Vector3 emit(double U, double V, Vector3 &p) const
+		{
+			return EmmisionTexture->Value(U, V, p);
+		}
+	private:
+		shared_ptr<Texture>  EmmisionTexture;
+	};
+
 	 
 
 #endif // !MATERIAL_H_
