@@ -59,5 +59,25 @@
     <ClInclude Include="src\Headers\Perlin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Headers\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Headers\rt_stb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Headers\aarect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\Textures\jupiter.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="src\Textures\MarbleTex.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="src\Textures\sun.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
