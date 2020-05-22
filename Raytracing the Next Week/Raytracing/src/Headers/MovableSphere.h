@@ -37,6 +37,7 @@ bool MovableSphere::isHit(const Ray & ray, double t_min, double t_max, HitRecord
 			Vector3 OutwardNormal = (hitRecord.HitPoint - GetCenterAtTime(ray.Time())) / Radius;
 			hitRecord.SetFaceNormal(ray, OutwardNormal);
 			hitRecord.mat_ptr = mat;
+			GetSphereUVs((hitRecord.HitPoint - GetCenterAtTime(ray.Time()))/Radius, hitRecord.U, hitRecord.V);
 			return true;
 		}
 		temp = (-B + sqrt(Discriminant)) / A;
@@ -47,6 +48,7 @@ bool MovableSphere::isHit(const Ray & ray, double t_min, double t_max, HitRecord
 			Vector3 OutwardNormal = (hitRecord.HitPoint - GetCenterAtTime(ray.Time())) / Radius;
 			hitRecord.SetFaceNormal(ray, OutwardNormal);
 			hitRecord.mat_ptr = mat;
+			GetSphereUVs((hitRecord.HitPoint - GetCenterAtTime(ray.Time()))/Radius, hitRecord.U, hitRecord.V);
 			return true;
 		}
 	}

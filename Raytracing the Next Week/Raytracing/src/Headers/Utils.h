@@ -77,6 +77,14 @@ double Remap(double value, double Start1, double End1, double Start2, double End
 	return Start2 + (End2 - Start2) * (value - Start1)/ (End1 - Start1);
 }
 
+void GetSphereUVs(const Vector3 &p, double &u, double &v)
+{
+	double phi = atan2(p.z(), p.x());
+	double theta = asin(p.y());
+	u = (phi + M_PI) / (2 * M_PI);
+	v = (theta + (M_PI / 2)) / M_PI;
+}
+
 inline double ffmin(double a, double b) {return a >= b ? b : a; }
 inline double ffmax(double a, double b) {return a >= b ? a : b; }
 inline double SmoothStep(double t) { return (t*t*(3 - 2 * t)); }

@@ -37,6 +37,7 @@
 				Vector3 OutwardNormal = (hitRecord.HitPoint - this->Center) / Radius;
 				hitRecord.SetFaceNormal(ray, OutwardNormal);
 				hitRecord.mat_ptr = mat;
+				GetSphereUVs((hitRecord.HitPoint - Center) / Radius, hitRecord.U, hitRecord.V);
 				return true;
 			}
 			temp = (-B + sqrt(Discriminant)) / A;
@@ -47,6 +48,7 @@
 				Vector3 OutwardNormal = (hitRecord.HitPoint - this->Center) / Radius;
 				hitRecord.SetFaceNormal(ray, OutwardNormal);
 				hitRecord.mat_ptr = mat;
+				GetSphereUVs((hitRecord.HitPoint - Center) / Radius, hitRecord.U, hitRecord.V);
 				return true;
 			}
 		}	 
@@ -59,6 +61,8 @@
 		OutputBox = aabb(Center - Vector3(this->Radius, this->Radius, this->Radius), Center + Vector3(this->Radius, this->Radius, this->Radius));
 		return true;
 	}
+
+	
 
 #endif // !SPHERE_H_
 
