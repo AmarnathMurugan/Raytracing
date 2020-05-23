@@ -1,7 +1,6 @@
-#include "Headers/Hitable_list.h"
+#include "Headers/Cuboid.h"
 #include "Headers/Sphere.h"
 #include "Headers/MovableSphere.h"
-#include "Headers/aarect.h"
 #include "Headers/Camera.h"
 #include "Headers/Material.h"
 #include "Headers/bvh_node.h"
@@ -20,9 +19,9 @@
 #pragma endregion
 	   
 #pragma region PUBLIC_VARIABLES
-	const int imageWidth = 200;
-	const int imageHeight = 200;
-	const int Samples = 200;
+	const int imageWidth = 100;
+	const int imageHeight = 100;
+	const int Samples = 500;
 	const int MaxDepth = 200;
 
 	const int NumberOfThreads = std::thread::hardware_concurrency();
@@ -41,7 +40,7 @@ int main()
 	std::cout << "P3\n";
 	std::cout << imageWidth << " " << imageHeight << "\n255\n"; 
 
-	Vector3 LookFrom(278, 278, -800);
+	Vector3 LookFrom(278, 278, -860);
 	Vector3 LookAt(278, 278, 0);
 	Vector3 ViewUp(0, 1, 0);
 	double focalDistance = (LookFrom - LookAt).length();
@@ -141,13 +140,16 @@ HitableList GetCornellBox()
 	auto red = make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(0.65, 0.05, 0.05)));
 	auto white = make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(0.73, 0.73, 0.73)));
 	auto green = make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(0.12, 0.45, 0.15)));
-	auto light = make_shared<DiffuseLight>(make_shared<ConstantTexture>(Vector3(15, 15, 15)));
+	auto light = make_shared<DiffuseLight>(make_shared<ConstantTexture>(Vector3(15, 15, 15)));
+
 	HitableList World(make_shared<RectYZ>(0, 555, 0, 555, 555, green, true));
 	World.Add(make_shared<RectYZ>(0, 555, 0, 555, 0, red));
 	World.Add(make_shared<RectXZ>(213, 343, 227, 332, 554, light, true));
 	World.Add(make_shared<RectXZ>(0, 555, 0, 555, 555, white,true));
 	World.Add(make_shared<RectXZ>(0, 555, 0, 555, 0, white));
 	World.Add(make_shared<RectXY>(0, 555, 0, 555, 555, white));
+	World.Add(make_shared<Cuboid>(Vector3(265, 0, 65), Vector3(430, 165, 230), white));
+	World.Add(make_shared<Cuboid>(Vector3(130, 0, 295), Vector3(295, 330, 460), white));
 	return HitableList(make_shared<bvh_node>(World, 0, 1));
 }
 

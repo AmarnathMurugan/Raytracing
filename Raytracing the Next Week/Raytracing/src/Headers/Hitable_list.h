@@ -11,7 +11,7 @@ using std::make_shared;
 	class HitableList : public Hitable
 	{
 	public:
-		
+		HitableList() {}
 		HitableList(shared_ptr<Hitable> obj) { Add(obj); }
 		void Add(shared_ptr<Hitable> obj) { Objects.push_back(obj); } //try emplace_back
 		void Clear() { Objects.clear(); }
