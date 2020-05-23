@@ -13,6 +13,7 @@
 
 #pragma region FUNCTION_SIGNATURES
 	HitableList GetWorld();
+	HitableList GetCornellBox();
 	Vector3 ColorAtRay(const Ray& ray, HitableList& world, int depth, bool isUseSkybox=true);
 	void GetChunkRange(int& Start, int& End);
 	void RenderImage(int ThreadIndex, HitableList& World, Camera& cam);
@@ -20,7 +21,7 @@
 	   
 #pragma region PUBLIC_VARIABLES
 	const int imageWidth = 200;
-	const int imageHeight = 100;
+	const int imageHeight = 200;
 	const int Samples = 200;
 	const int MaxDepth = 200;
 
@@ -40,14 +41,15 @@ int main()
 	std::cout << "P3\n";
 	std::cout << imageWidth << " " << imageHeight << "\n255\n"; 
 
-	Vector3 LookFrom(0, 10, -0.5);
-	Vector3 LookAt(0, 2, 0);
+	Vector3 LookFrom(278, 278, -800);
+	Vector3 LookAt(278, 278, 0);
 	Vector3 ViewUp(0, 1, 0);
 	double focalDistance = (LookFrom - LookAt).length();
 	double aperture = 0.02;
 	Camera cam(35,(imageWidth/(double)imageHeight),aperture,focalDistance,LookFrom,LookAt,ViewUp,0,1);
 	
-	HitableList World = GetWorld();
+	//HitableList World = GetWorld();
+	HitableList World = GetCornellBox();
 
 	auto StartTime = std::chrono::steady_clock::now();
 
@@ -134,6 +136,21 @@ HitableList GetWorld()
 	return HitableList(make_shared<bvh_node>(World,0,1));
 }
 
+HitableList GetCornellBox()
+{
+	auto red = make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(0.65, 0.05, 0.05)));
+	auto white = make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(0.73, 0.73, 0.73)));
+	auto green = make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(0.12, 0.45, 0.15)));
+	auto light = make_shared<DiffuseLight>(make_shared<ConstantTexture>(Vector3(15, 15, 15)));
+	HitableList World(make_shared<RectYZ>(0, 555, 0, 555, 555, green, true));
+	World.Add(make_shared<RectYZ>(0, 555, 0, 555, 0, red));
+	World.Add(make_shared<RectXZ>(213, 343, 227, 332, 554, light, true));
+	World.Add(make_shared<RectXZ>(0, 555, 0, 555, 555, white,true));
+	World.Add(make_shared<RectXZ>(0, 555, 0, 555, 0, white));
+	World.Add(make_shared<RectXY>(0, 555, 0, 555, 555, white));
+	return HitableList(make_shared<bvh_node>(World, 0, 1));
+}
+
 Vector3 ColorAtRay(const Ray& ray, HitableList& world, int depth,  bool isUseSkybox)
 {
 	if (depth <= 0)
@@ -143,7 +160,8 @@ Vector3 ColorAtRay(const Ray& ray, HitableList& world, int depth,  bool isUseSky
 	if (world.isHit(ray, 0.001, DBL_MAX, hitRecord))
 	{
 		Vector3 Attenuation;
-		Ray ScatteredRay;
+		Ray ScatteredRay;		 
+		//if (hitRecord.HitPoint.y() < 270 && hitRecord.HitPoint.x()==555 && depth == MaxDepth) __debugbreak();
 		Vector3 emmisionColor = hitRecord.mat_ptr->emit(hitRecord.U, hitRecord.V, hitRecord.HitPoint);
 		if (hitRecord.mat_ptr->scatter(ray, hitRecord, Attenuation, ScatteredRay))
 			return emmisionColor + Attenuation * ColorAtRay(ScatteredRay, world, depth - 1, isUseSkybox);
@@ -189,8 +207,9 @@ void RenderImage(int ThreadIndex, HitableList& World, Camera& cam)
 			{
 				double U = (x + RandomDouble()) / (double)imageWidth;
 				double V = (y + RandomDouble()) / (double)imageHeight;
+				//if (x == 20 && y == 60) __debugbreak();
 				Ray ray = cam.GetRayAtUV(U, V);
-				Vector3 SamplingColor = ColorAtRay(ray, World, MaxDepth,true);			
+				Vector3 SamplingColor = ColorAtRay(ray, World, MaxDepth,false);			
 				double red = SamplingColor.r();
 				color += SamplingColor;
 			}
