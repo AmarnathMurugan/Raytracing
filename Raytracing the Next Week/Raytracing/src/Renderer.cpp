@@ -19,10 +19,10 @@
 #pragma endregion
 	   
 #pragma region PUBLIC_VARIABLES
-	const int imageWidth = 100;
-	const int imageHeight = 100;
-	const int Samples = 500;
-	const int MaxDepth = 200;
+	const int imageWidth = 500;
+	const int imageHeight = 500;
+	const int Samples = 2000;
+	const int MaxDepth = 60;
 
 	const int NumberOfThreads = std::thread::hardware_concurrency();
 	const int ChunkSize = imageHeight / NumberOfThreads;
@@ -40,7 +40,7 @@ int main()
 	std::cout << "P3\n";
 	std::cout << imageWidth << " " << imageHeight << "\n255\n"; 
 
-	Vector3 LookFrom(278, 278, -860);
+	Vector3 LookFrom(278, 278, -880);
 	Vector3 LookAt(278, 278, 0);
 	Vector3 ViewUp(0, 1, 0);
 	double focalDistance = (LookFrom - LookAt).length();
@@ -91,46 +91,19 @@ HitableList GetWorld()
 
 	HitableList World(make_shared<Sphere>(Vector3(0, -1000, 0), 1000, make_shared<Lambertian>(NoiseTexture)));
 	World.Add(make_shared<Sphere>(Vector3(0, 2, 0), 2, make_shared<Lambertian>(imgTexture)));
-	//World.Add(make_shared<Sphere>(Vector3(4, 2, 0), 2, make_shared<Lambertian>(checTex)));
-	World.Add(make_shared<RectXY>(1, 3, 1, 3, 2.5, LightMaterial));
-	
-	/*HitableList World(make_shared<Sphere>(Vector3(0, -1001, 4), 1000, make_shared<Lambertian>(NoiseTexture)));
-	World.Add(make_shared<Sphere>(Vector3(0, 0, 4), 1, make_shared<Lambertian>(NoiseTexture)));
-	World.Add(make_shared<Sphere>(Vector3(0, 0, 4), 1, make_shared<Lambertian>(imgTexture)));
-	World.Add(make_shared<RectXY>(-0.4,0.4,-0.4,0.4,6, LightTexture));*/
-	int NumberOfSpheresInCircle = 18;
-	double x, z;
-	Vector3 dir;
-	//for (int i = 0; i < NumberOfSpheresInCircle; i++)
-	//{		
-	//	DirectionAtAngle(i * 360 / NumberOfSpheresInCircle,z,x);
-	//	z *= -1;
-	//	dir.SetValues(x, 0, z);
-	//	Vector3 position = Vector3(0, 0, 4) + dir * 0.6;
-	//	World.Add(make_shared<Sphere>(position - Vector3(0, position.x()*0.3, 0), 0.04, make_shared<Lambertian>(Vector3(0.045, 1.1, .5))));
-	//    position = Vector3(0, 0, 4) + dir * 0.8;		 
-	//	World.Add(make_shared<Sphere>(position - Vector3(0, position.x()*0.3, 0), 0.04, make_shared<Metal>(Vector3(1,1 , 1),0.01)));
-	//	position = Vector3(0, 0, 4) + dir ;		
-	//	World.Add(make_shared<Sphere>(position - Vector3(0,position.x()*0.3,0) , 0.04, make_shared<Dielectric>(1.5)));
-	//}
-	//for(int i=-5; i<15;i++)
-	//	for (int j = 0; j < 10; j++)
-	//	{
-	//		double MaterialProbability = RandomDouble();
-	//		Vector3 center(i + RandomDouble()*0.9, -0.44, j + RandomDouble()*0.9);
-	//		Vector3 End = center + Vector3(0, RandomDouble(0,0.45), 0);
-	//		if ((center - Vector3(0, 0, 4)).SqrdLength() > 0.25 && (center - Vector3(0, -0.38, 0.5)).SqrdLength() > 0.25)
-	//		{
-	//			
-	//			if(MaterialProbability < 0.6)
-	//				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(RandomDouble(), RandomDouble(), RandomDouble())))));
-	//			else if(MaterialProbability < 0.8)
-	//				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Metal>(Vector3(RandomDouble(), RandomDouble(), RandomDouble()),RandomDouble())));
-	//			else
-	//				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Dielectric>(1.5)));
-	//		}
-	//	}
-
+	for(int i=-5; i<15;i++)
+		for (int j = 0; j < 10; j++)
+		{
+			double MaterialProbability = RandomDouble();
+			Vector3 center(i + RandomDouble()*0.9, 0.06, j + RandomDouble()*0.9);
+			if(MaterialProbability < 0.6)
+				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(RandomDouble(), RandomDouble(), RandomDouble())))));
+			else if(MaterialProbability < 0.8)
+				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Metal>(Vector3(RandomDouble(), RandomDouble(), RandomDouble()),RandomDouble())));
+			else
+				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Dielectric>(1.5)));
+			
+		}
 	 
 	return HitableList(make_shared<bvh_node>(World,0,1));
 }
@@ -144,12 +117,18 @@ HitableList GetCornellBox()
 
 	HitableList World(make_shared<RectYZ>(0, 555, 0, 555, 555, green, true));
 	World.Add(make_shared<RectYZ>(0, 555, 0, 555, 0, red));
-	World.Add(make_shared<RectXZ>(213, 343, 227, 332, 554, light, true));
 	World.Add(make_shared<RectXZ>(0, 555, 0, 555, 555, white,true));
 	World.Add(make_shared<RectXZ>(0, 555, 0, 555, 0, white));
 	World.Add(make_shared<RectXY>(0, 555, 0, 555, 555, white));
-	World.Add(make_shared<Cuboid>(Vector3(265, 0, 65), Vector3(430, 165, 230), white));
-	World.Add(make_shared<Cuboid>(Vector3(130, 0, 295), Vector3(295, 330, 460), white));
+	World.Add(make_shared<RectXZ>(213, 343, 227, 332, 554, light, true));
+
+	shared_ptr<Hitable> tallCubiod = make_shared<RotateY>(make_shared<Cuboid>(Vector3(0, 0, 0), Vector3(165, 330, 165), white), -15);
+	tallCubiod = make_shared<Translate>(tallCubiod, Vector3(130,0,295));
+	shared_ptr<Hitable> smolCuboid = make_shared<RotateY>(make_shared<Cuboid>(Vector3(0, 0, 0), Vector3(165, 165, 165), white), 18);
+	smolCuboid = make_shared<Translate>(smolCuboid, Vector3(265, 0, 65));
+
+	World.Add(smolCuboid);
+	World.Add(tallCubiod);
 	return HitableList(make_shared<bvh_node>(World, 0, 1));
 }
 

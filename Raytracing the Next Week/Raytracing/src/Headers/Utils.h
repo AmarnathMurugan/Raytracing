@@ -88,5 +88,6 @@ void GetSphereUVs(const Vector3 &p, double &u, double &v)
 inline double ffmin(double a, double b) {return a >= b ? b : a; }
 inline double ffmax(double a, double b) {return a >= b ? a : b; }
 inline double SmoothStep(double t) { return (t*t*(3 - 2 * t)); }
+inline double Deg2Rads(double angle) { return (angle / 180) * M_PI; }
 #endif // !UTILS_H_
 
