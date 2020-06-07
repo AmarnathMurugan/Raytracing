@@ -140,7 +140,7 @@
     <ClInclude Include="src\Headers\aarect.h" />
     <ClInclude Include="src\Headers\bvh_node.h" />
     <ClInclude Include="src\Headers\Camera.h" />
-    <ClInclude Include="src\Headers\ConstantVolume.h" />
+    <ClInclude Include="src\Headers\Volume.h" />
     <ClInclude Include="src\Headers\Cuboid.h" />
     <ClInclude Include="src\Headers\Hitable.h" />
     <ClInclude Include="src\Headers\Hitable_list.h" />

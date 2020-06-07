@@ -71,7 +71,7 @@
     <ClInclude Include="src\Headers\Cuboid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Headers\ConstantVolume.h">
+    <ClInclude Include="src\Headers\Volume.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
