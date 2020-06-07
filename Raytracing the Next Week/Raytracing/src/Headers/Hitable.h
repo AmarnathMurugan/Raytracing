@@ -51,6 +51,7 @@
 			return false;
 		hitRecord.HitPoint += Offset;
 		hitRecord.SetFaceNormal(OffsetRay, hitRecord.Normal);
+		return true;
 	}
 
 	bool Translate::GetBoundingBox(double time1, double time2, aabb & OutputBox) const

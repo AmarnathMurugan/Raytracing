@@ -4,6 +4,7 @@
 #include "Headers/Camera.h"
 #include "Headers/Material.h"
 #include "Headers/bvh_node.h"
+#include "Headers/ConstantVolume.h"
 #include "Headers/rt_stb.h"
 #include <thread>
 #include <mutex>
@@ -19,9 +20,9 @@
 #pragma endregion
 	   
 #pragma region PUBLIC_VARIABLES
-	const int imageWidth = 500;
-	const int imageHeight = 500;
-	const int Samples = 2000;
+	const int imageWidth = 300;
+	const int imageHeight = 300;
+	const int Samples = 1000;
 	const int MaxDepth = 60;
 
 	const int NumberOfThreads = std::thread::hardware_concurrency();
@@ -113,20 +114,22 @@ HitableList GetCornellBox()
 	auto red = make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(0.65, 0.05, 0.05)));
 	auto white = make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(0.73, 0.73, 0.73)));
 	auto green = make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(0.12, 0.45, 0.15)));
-	auto light = make_shared<DiffuseLight>(make_shared<ConstantTexture>(Vector3(15, 15, 15)));
-
+	auto light = make_shared<DiffuseLight>(make_shared<ConstantTexture>(Vector3(7, 7, 7)));
+	auto isoLight = make_shared<Isotropic>(make_shared<ConstantTexture>(Vector3(0.2, 0.2, 0.2)));
+	auto isoDark = make_shared<Isotropic>(make_shared<ConstantTexture>(Vector3(0.7, 0.7, 0.7)));
 	HitableList World(make_shared<RectYZ>(0, 555, 0, 555, 555, green, true));
 	World.Add(make_shared<RectYZ>(0, 555, 0, 555, 0, red));
 	World.Add(make_shared<RectXZ>(0, 555, 0, 555, 555, white,true));
 	World.Add(make_shared<RectXZ>(0, 555, 0, 555, 0, white));
 	World.Add(make_shared<RectXY>(0, 555, 0, 555, 555, white));
-	World.Add(make_shared<RectXZ>(213, 343, 227, 332, 554, light, true));
+	World.Add(make_shared<RectXZ>(113, 443, 127, 432, 554, light, true));
 
 	shared_ptr<Hitable> tallCubiod = make_shared<RotateY>(make_shared<Cuboid>(Vector3(0, 0, 0), Vector3(165, 330, 165), white), -15);
 	tallCubiod = make_shared<Translate>(tallCubiod, Vector3(130,0,295));
+	tallCubiod = make_shared<ConstantVolume>(isoLight, tallCubiod, 0.01);
 	shared_ptr<Hitable> smolCuboid = make_shared<RotateY>(make_shared<Cuboid>(Vector3(0, 0, 0), Vector3(165, 165, 165), white), 18);
 	smolCuboid = make_shared<Translate>(smolCuboid, Vector3(265, 0, 65));
-
+	smolCuboid = make_shared<ConstantVolume>(isoDark, smolCuboid, 0.01);
 	World.Add(smolCuboid);
 	World.Add(tallCubiod);
 	return HitableList(make_shared<bvh_node>(World, 0, 1));

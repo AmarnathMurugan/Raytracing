@@ -143,6 +143,22 @@
 		shared_ptr<Texture>  EmmisionTexture;
 	};
 
+	class Isotropic : public Material
+	{
+	public:
+		Isotropic(shared_ptr<Texture> t) : tex(t) {}
+		virtual bool scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay) const  
+		{
+			scatteredRay = Ray(hitRecord.HitPoint, RandomPointOnUnitSphere(), SourceRay.Time());
+			attenuation = tex->Value(hitRecord.U, hitRecord.V, hitRecord.HitPoint);
+			return true;
+		}
+	
+	private:
+		shared_ptr<Texture> tex;
+	};
+ 
+
 	 
 
 #endif // !MATERIAL_H_
