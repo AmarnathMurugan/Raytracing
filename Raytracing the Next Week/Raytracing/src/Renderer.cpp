@@ -4,7 +4,7 @@
 #include "Headers/Camera.h"
 #include "Headers/Material.h"
 #include "Headers/bvh_node.h"
-#include "Headers/ConstantVolume.h"
+#include "Headers/Volume.h"
 #include "Headers/rt_stb.h"
 #include <thread>
 #include <mutex>
@@ -100,7 +100,7 @@ HitableList GetWorld()
 			if(MaterialProbability < 0.6)
 				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(RandomDouble(), RandomDouble(), RandomDouble())))));
 			else if(MaterialProbability < 0.8)
-				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Metal>(Vector3(RandomDouble(), RandomDouble(), RandomDouble()),RandomDouble())));
+				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Metal>(make_shared<ConstantTexture>(Vector3(RandomDouble(), RandomDouble(), RandomDouble())),RandomDouble())));
 			else
 				World.Add(make_shared<Sphere>(center, 0.06, make_shared<Dielectric>(1.5)));
 			
@@ -115,8 +115,9 @@ HitableList GetCornellBox()
 	auto white = make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(0.73, 0.73, 0.73)));
 	auto green = make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(0.12, 0.45, 0.15)));
 	auto light = make_shared<DiffuseLight>(make_shared<ConstantTexture>(Vector3(7, 7, 7)));
-	auto isoLight = make_shared<Isotropic>(make_shared<ConstantTexture>(Vector3(0.2, 0.2, 0.2)));
+	auto isoLight = make_shared<Isotropic>(make_shared<PerlinTexture>(.02,8, PerlinTexture::NoiseType::PerlinNoise), Vector3(0.1, 0.1, 0.2));
 	auto isoDark = make_shared<Isotropic>(make_shared<ConstantTexture>(Vector3(0.7, 0.7, 0.7)));
+ 
 	HitableList World(make_shared<RectYZ>(0, 555, 0, 555, 555, green, true));
 	World.Add(make_shared<RectYZ>(0, 555, 0, 555, 0, red));
 	World.Add(make_shared<RectXZ>(0, 555, 0, 555, 555, white,true));
@@ -124,12 +125,12 @@ HitableList GetCornellBox()
 	World.Add(make_shared<RectXY>(0, 555, 0, 555, 555, white));
 	World.Add(make_shared<RectXZ>(113, 443, 127, 432, 554, light, true));
 
-	shared_ptr<Hitable> tallCubiod = make_shared<RotateY>(make_shared<Cuboid>(Vector3(0, 0, 0), Vector3(165, 330, 165), white), -15);
+	shared_ptr<Hitable> tallCubiod = make_shared<RotateY>(make_shared<Cuboid>(Vector3(0, 0, 0), Vector3(165, 330, 165),white), -15);
 	tallCubiod = make_shared<Translate>(tallCubiod, Vector3(130,0,295));
-	tallCubiod = make_shared<ConstantVolume>(isoLight, tallCubiod, 0.01);
+	tallCubiod = make_shared<Volume>(isoLight, tallCubiod, 0.01,false);
 	shared_ptr<Hitable> smolCuboid = make_shared<RotateY>(make_shared<Cuboid>(Vector3(0, 0, 0), Vector3(165, 165, 165), white), 18);
 	smolCuboid = make_shared<Translate>(smolCuboid, Vector3(265, 0, 65));
-	smolCuboid = make_shared<ConstantVolume>(isoDark, smolCuboid, 0.01);
+	smolCuboid = make_shared<Volume>(isoDark, smolCuboid, 0.01);
 	World.Add(smolCuboid);
 	World.Add(tallCubiod);
 	return HitableList(make_shared<bvh_node>(World, 0, 1));
@@ -193,7 +194,7 @@ void RenderImage(int ThreadIndex, HitableList& World, Camera& cam)
 				double V = (y + RandomDouble()) / (double)imageHeight;
 				//if (x == 20 && y == 60) __debugbreak();
 				Ray ray = cam.GetRayAtUV(U, V);
-				Vector3 SamplingColor = ColorAtRay(ray, World, MaxDepth,false);			
+				Vector3 SamplingColor = ColorAtRay(ray, World, MaxDepth,true);			
 				double red = SamplingColor.r();
 				color += SamplingColor;
 			}
