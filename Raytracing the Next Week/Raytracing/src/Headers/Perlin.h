@@ -40,8 +40,7 @@
 	}
 
 	double Perlin::PerlinNoise(const Vector3 &p) const
-	{
-		double scale = 5;
+	{		 
 
 		int x = (int)(floor(p.x()));
 		int y = (int)(floor(p.y()));

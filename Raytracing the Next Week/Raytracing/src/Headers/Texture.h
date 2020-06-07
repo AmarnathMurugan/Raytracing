@@ -50,25 +50,28 @@
 		{
 			PerlinNoise,TurbulentNoise,MarbleNoise
 		};
-		PerlinTexture(double scale = 1,double layers=5, NoiseType type=NoiseType::PerlinNoise, Vector3 c = Vector3(1,1,1)) :Scale(scale),Layers(layers),noiseType(type), Color(c) {}
+		PerlinTexture(double scale = 1,double layers=5, NoiseType type=NoiseType::PerlinNoise) :Scale(scale),Layers(layers),noiseType(type) {}
 		virtual Vector3 Value(double U, double V, const Vector3& p) const
 		{ 	
+			Vector3 White(1, 1, 1);
 			switch (noiseType)			
 			{
 				case NoiseType::PerlinNoise:
-					return Vector3(1, 1, 1)*0.5*(1+ noise.PerlinNoise(Scale * p));
+					return White*0.5*(1+ noise.PerlinNoise(Scale * p));
 				case NoiseType::TurbulentNoise:
-					return Vector3(1, 1, 1) * noise.turbulentNoise(Scale * p,Layers);		
+					return White * noise.turbulentNoise(Scale * p,Layers);
 				case NoiseType::MarbleNoise:
-					return Vector3(1, 1, 1) * 0.5 * (1 + sin(Scale*p.z() + 10 * noise.turbulentNoise(p, Layers)));	
-				default: return Color * 0.5 * (1 + noise.PerlinNoise(Scale * p));
+					return White * 0.5 * (1 + sin(Scale*p.z() + 10 * noise.turbulentNoise(p, Layers)));
+				default:
+					return White * 0.5*(1 + noise.PerlinNoise(Scale * p));
 			}
+			 
 		}
 
+	
 	private:
 		Perlin noise;
 		NoiseType noiseType;
-		Vector3 Color;
 		double Scale,Layers;
 	};
 
