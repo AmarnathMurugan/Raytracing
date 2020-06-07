@@ -13,6 +13,9 @@
 		public:
 			virtual bool scatter(const Ray& SourceRay,const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay) const = 0;
 			virtual Vector3 emit(double U, double V, Vector3 &p) const { return Vector3(0, 0, 0); }
+
+		public:
+			Vector3 TintColor;
 	};
 
 
@@ -22,7 +25,10 @@
 	{
 	public:
 		
-		Lambertian(shared_ptr<Texture> a) : Albedo(a) {}
+		Lambertian(shared_ptr<Texture> a,const Vector3& tc = Vector3(1,1,1)) : Albedo(a) 
+		{
+			TintColor = tc;
+		}
 		virtual bool scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay) const;
 		
 		shared_ptr<Texture> Albedo;
@@ -34,7 +40,7 @@
 	{
 		Vector3 target = hitRecord.HitPoint + hitRecord.Normal + RandomPointOnUnitSphere();
 		scatteredRay = Ray(hitRecord.HitPoint, (target - hitRecord.HitPoint),SourceRay.Time());
-		attenuation = Albedo->Value(hitRecord.U,hitRecord.V,hitRecord.HitPoint);
+		attenuation = Albedo->Value(hitRecord.U,hitRecord.V,hitRecord.HitPoint) * TintColor;
 		return true;
 	}
 
@@ -44,10 +50,10 @@
 	{
 	public:
 		
-		Metal(const Vector3& a, double f) : Albedo(a),fuzziness(f>1 ? 1:f) { }
+		Metal(shared_ptr<Texture> a, double f, const Vector3& tc = Vector3(1, 1, 1)) : Albedo(a),fuzziness(f>1 ? 1:f) { TintColor = tc; }
 		virtual bool scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay) const;
 
-		Vector3 Albedo;
+		shared_ptr<Texture> Albedo;
 		double fuzziness;
 	};
 	 
@@ -57,7 +63,7 @@
 	 
 		Vector3 ReflectedRay = ReflectVector(SourceRay.Ray_Direction().normalized() , hitRecord.Normal);
 		scatteredRay = Ray(hitRecord.HitPoint, ReflectedRay+ this->fuzziness * RandomPointInUnitSphere(), SourceRay.Time());
-		attenuation = this->Albedo;
+		attenuation = Albedo->Value(hitRecord.U, hitRecord.V, hitRecord.HitPoint) * TintColor;
 		return (DotProduct(scatteredRay.Ray_Direction(), hitRecord.Normal) > 0);
 	}
 
@@ -66,7 +72,7 @@
 	class Dielectric : public Material
 	{
 	public:
-		Dielectric(double ref_indx) : RefractiveIndex(ref_indx) {}
+		Dielectric(double ref_indx, const Vector3& tc = Vector3(1, 1, 1)) : RefractiveIndex(ref_indx) { TintColor = tc; }
 
 		virtual bool scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay) const;
 		Vector3 RefractRay(const Vector3& IncidentRay, const double NiOverNt, const Vector3& OutwardNormal) const;
@@ -80,7 +86,7 @@
 	{
 		 
 		
-		attenuation = Vector3(1.0, 1.0, 1.0);
+		attenuation = Vector3(1.0, 1.0, 1.0) * TintColor;
 
 		double NiOverNt = (hitRecord.isFrontFace) ? (1 / RefractiveIndex) : RefractiveIndex;
 
@@ -146,15 +152,15 @@
 	class Isotropic : public Material
 	{
 	public:
-		Isotropic(shared_ptr<Texture> t) : tex(t) {}
+		Isotropic(shared_ptr<Texture> t, const Vector3& tc = Vector3(1, 1, 1)) : tex(t) { TintColor = tc; }
 		virtual bool scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay) const  
 		{
 			scatteredRay = Ray(hitRecord.HitPoint, RandomPointOnUnitSphere(), SourceRay.Time());
-			attenuation = tex->Value(hitRecord.U, hitRecord.V, hitRecord.HitPoint);
+			attenuation = tex->Value(hitRecord.U, hitRecord.V, hitRecord.HitPoint) * TintColor;
 			return true;
 		}
 	
-	private:
+	public:
 		shared_ptr<Texture> tex;
 	};
  
