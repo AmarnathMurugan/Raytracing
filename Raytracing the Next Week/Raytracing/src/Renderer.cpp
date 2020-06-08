@@ -20,9 +20,9 @@
 #pragma endregion
 	   
 #pragma region PUBLIC_VARIABLES
-	const int imageWidth = 300;
-	const int imageHeight = 300;
-	const int Samples = 1000;
+	const int imageWidth = 500;
+	const int imageHeight = 500;
+	const int Samples = 2000;
 	const int MaxDepth = 60;
 
 	const int NumberOfThreads = std::thread::hardware_concurrency();
@@ -127,7 +127,7 @@ HitableList GetCornellBox()
 
 	shared_ptr<Hitable> tallCubiod = make_shared<RotateY>(make_shared<Cuboid>(Vector3(0, 0, 0), Vector3(165, 330, 165),white), -15);
 	tallCubiod = make_shared<Translate>(tallCubiod, Vector3(130,0,295));
-	tallCubiod = make_shared<Volume>(isoLight, tallCubiod, 0.01,false);
+	tallCubiod = make_shared<Volume>(isoLight, tallCubiod, 0.015,false);
 	shared_ptr<Hitable> smolCuboid = make_shared<RotateY>(make_shared<Cuboid>(Vector3(0, 0, 0), Vector3(165, 165, 165), white), 18);
 	smolCuboid = make_shared<Translate>(smolCuboid, Vector3(265, 0, 65));
 	smolCuboid = make_shared<Volume>(isoDark, smolCuboid, 0.01);

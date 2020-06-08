@@ -34,14 +34,16 @@
 		if (r1.t < 0) r1.t = 0;
 		double RayLength = ray.Ray_Direction().length();
 		double LengthOfBounds = (r2.t - r1.t)*RayLength;
-		double hitDistance = 0, OffsetDistance;
+		double hitDistance = 0, OffsetDistance, densityValue;
 		Vector3 hitPoint;
 		do
 		{
 			hitDistance += log(1 - RandomDouble()) * NegativeInverseDensity;
 			OffsetDistance = r1.t + hitDistance / RayLength;
-			hitPoint = ray.Point_On_Ray(OffsetDistance);	
-			if (phaseFunction->tex->Value(0,0,hitPoint).x() > RandomDouble()) break;
+			hitPoint = ray.Point_On_Ray(OffsetDistance);
+			densityValue = phaseFunction->tex->Value(0, 0, hitPoint).x();
+			densityValue *= densityValue;
+			if (densityValue > RandomDouble()) break;
 		} while (true && !isUniformDistribution);
 		if (hitDistance > LengthOfBounds)
 			return false;
