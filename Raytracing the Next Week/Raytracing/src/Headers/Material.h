@@ -139,11 +139,11 @@
 	class DiffuseLight : public Material
 	{
 	public:
-		DiffuseLight(shared_ptr<Texture> tex) : EmmisionTexture(tex) {}
+		DiffuseLight(shared_ptr<Texture> tex, const Vector3& tc = Vector3(1, 1, 1)) : EmmisionTexture(tex) { TintColor = tc; }
 		virtual bool scatter(const Ray& SourceRay, const HitRecord& hitRecord, Vector3& attenuation, Ray& scatteredRay) const { return false; }
 		virtual Vector3 emit(double U, double V, Vector3 &p) const
 		{
-			return EmmisionTexture->Value(U, V, p);
+			return EmmisionTexture->Value(U, V, p) * TintColor;
 		}
 	private:
 		shared_ptr<Texture>  EmmisionTexture;
