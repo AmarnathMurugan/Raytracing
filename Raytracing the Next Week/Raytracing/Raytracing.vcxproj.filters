@@ -85,5 +85,8 @@
     <Image Include="src\Textures\sun.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="src\Textures\moon.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

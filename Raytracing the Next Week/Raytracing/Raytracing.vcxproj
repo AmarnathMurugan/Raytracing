@@ -156,6 +156,7 @@
     <ClInclude Include="src\Headers\Vector3.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="src\Textures\moon.jpg" />
     <Image Include="src\Textures\sun.jpg" />
     <Image Include="src\Textures\MarbleTex.png" />
     <Image Include="src\Textures\jupiter.jpg" />

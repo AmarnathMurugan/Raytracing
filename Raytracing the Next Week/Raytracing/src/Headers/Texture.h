@@ -61,7 +61,7 @@
 				case NoiseType::TurbulentNoise:
 					return White * noise.turbulentNoise(Scale * p,Layers);
 				case NoiseType::MarbleNoise:
-					return White * 0.5 * (1 + sin(Scale*p.z() + 10 * noise.turbulentNoise(p, Layers)));
+					return White * 0.5 * (1 + sin(Scale * p.y() + 10 * noise.turbulentNoise(Scale * p, Layers)));
 				default:
 					return White * 0.5*(1 + noise.PerlinNoise(Scale * p));
 			}
