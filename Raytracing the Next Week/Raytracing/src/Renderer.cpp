@@ -21,9 +21,9 @@
 #pragma endregion
 	   
 #pragma region PUBLIC_VARIABLES
-	const int imageWidth = 192*1.5;
-	const int imageHeight = 108*1.5;
-	const int Samples = 1500;
+	const int imageWidth = 480;
+	const int imageHeight = 270;
+	const int Samples = 2000;
 	const int MaxDepth = 60;
 
 	const int NumberOfThreads = std::thread::hardware_concurrency();
@@ -38,8 +38,7 @@
 #pragma endregion
 	   
 int main()
-{ 	
-	std::cerr << NumberOfThreads << " " << ChunkSize;
+{ 
 	std::cout << "P3\n";
 	std::cout << imageWidth << " " << imageHeight << "\n255\n"; 
 
@@ -118,7 +117,7 @@ HitableList GetCornellBox()
 	auto green = make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(0.12, 0.45, 0.15)));
 	auto NoiseTexture = make_shared<PerlinTexture>(.005, 7, PerlinTexture::NoiseType::MarbleNoise);
 	auto light = make_shared<DiffuseLight>(make_shared<ConstantTexture>(Vector3(6, 6, 6)));
-	auto isoLight = make_shared<Isotropic>(make_shared<PerlinTexture>(.04,8, PerlinTexture::NoiseType::PerlinNoise), Vector3(0.9, 0.6, 0.3));
+	auto isoLight = make_shared<Isotropic>(make_shared<PerlinTexture>(.02,8, PerlinTexture::NoiseType::PerlinNoise), Vector3(0.9, 0.4, 0.1));
 	auto isoDark = make_shared<Isotropic>(make_shared<ConstantTexture>(Vector3(0.7, 0.7, 0.7)));
  
 	HitableList World(make_shared<RectYZ>(150, 350, 0, 200, 200, green, true));
@@ -137,7 +136,7 @@ HitableList GetCornellBox()
 	smolCuboid = make_shared<Volume>(isoDark, smolCuboid, 0.01);
 	World.Add(smolCuboid);*/
 	
-	shared_ptr<Hitable> dielectricSphere = make_shared<Sphere>(Vector3(100, 250, 100), 50, make_shared<Dielectric>(1.5));
+	shared_ptr<Hitable> dielectricSphere = make_shared<Sphere>(Vector3(100, 240, 100), 80, make_shared<Dielectric>(1.5));
 	World.Add(dielectricSphere);	 
 	dielectricSphere = make_shared<Volume>(isoLight, dielectricSphere, 0.1, false);
 	World.Add(dielectricSphere);
@@ -158,7 +157,7 @@ HitableList GetfinalScene()
 {
 	HitableList boxes;
 	double x, x1, z, z1,y,lightProbability;
-	double radius = 30;
+	double radius = 15;
 	auto white = make_shared<Lambertian>(make_shared<ConstantTexture>(Vector3(0.75, 0.75, 0.75)));	
 	for(int i=0;i<20;i++)
 		for (int j = 0; j < 30; j++)
@@ -170,21 +169,22 @@ HitableList GetfinalScene()
 			y = RandomDouble(5, 90);
 			boxes.Add(make_shared<Cuboid>(Vector3(x, 0, z), Vector3(x1, y, z1), white));
 			lightProbability = RandomDouble();
-			if (lightProbability > 0.7)
+			if (lightProbability > 0.9 && ((x>230) || (x1<-30)))
 			{
-				auto light = make_shared<DiffuseLight>(make_shared<ConstantTexture>(Vector3(RandomDouble(2, 4), RandomDouble(2, 4), RandomDouble(2, 4))));
+				auto light = make_shared<DiffuseLight>(make_shared<ConstantTexture>(Vector3(RandomDouble(1.2, 2.5), RandomDouble(1.2, 2.5), RandomDouble(1.2, 2.5))));
 
 				Vector3 Center = Vector3((x + x1) / 2, y + radius, (z + z1) / 2);
-				if (lightProbability > 0.9)
-					boxes.Add(make_shared<MovableSphere>(Center, Center + Vector3(0, radius, 0), radius, light));
+				if (lightProbability > 0.98)
+					boxes.Add(make_shared<MovableSphere>(Center, Center + Vector3(0, radius*4, 0), radius, light));
 				else
 					boxes.Add(make_shared<Sphere>(Center, radius, light));
 			}
 			
 		}
 	auto isoConst = make_shared<Isotropic>(make_shared<ConstantTexture>(Vector3(0.7, 0.7, 0.7)));
+	auto isoNoise = make_shared<Isotropic>(make_shared<PerlinTexture>(.02, 8, PerlinTexture::NoiseType::PerlinNoise), Vector3(0.7, 0.7, 0.75));
 	shared_ptr<Hitable> fog = make_shared<Cuboid>(Vector3(-1000, -100, -900), Vector3(1000, 2000, 3000), white);
-	fog = make_shared<Volume>(isoConst, fog, 0.01);
+	fog = make_shared<Volume>(isoNoise, fog, 0.00055,false);
 	boxes.Add(fog);
 	HitableList objs(make_shared<bvh_node>(boxes, 0, 1));
 	HitableList Cornell = GetCornellBox();
@@ -233,7 +233,6 @@ void GetChunkRange(int& StartValue, int& EndValue)
 	NextHeight -= ChunkSize;
 	if (NextHeight < 0)
 		isComplete = true;
-	std::cerr << "\n " << StartValue << " " << EndValue;
 }
 
 void RenderImage(int ThreadIndex, HitableList& World, Camera& cam)
