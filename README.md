@@ -1,8 +1,29 @@
 
-An implementation of [Peter Shirley's](https://twitter.com/Peter_shirley)  [Ray tracing in one weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
+An implementation of [Peter Shirley's](https://twitter.com/Peter_shirley)  [Raytracing Series](https://raytracing.github.io/)
 
-![First Render](https://github.com/AmarnathMurugan/Raytracing/blob/master/Raytracing%20in%20One%20Weekend/Raytracing/Renders/render.png)
+Renders from "Ray Tracing In One Weekend":
 
-When I started with the project, v3 of the book was released midway. After the above render, I updated my code and added multithreading as well. I also made changes to how the sky gradient vaires, the object placement, and the default color range of the central sphere (if value is greater than 1 while sampling it seems like an emmisive material)
+<p align="center">
+  <img width="640" height="360" src="https://github.com/AmarnathMurugan/Raytracing/blob/master/Raytracing%20in%20One%20Weekend/Raytracing/Renders/render.png">
+</p>
 
-![New Render](https://github.com/AmarnathMurugan/Raytracing/blob/master/Raytracing%20in%20One%20Weekend/Raytracing/Renders/Output.png)
+This image was rendered after the code was updated to v3 of the ebook with C++11 features. I also played around with the gradation paraments of the skybox and added multithreading.
+
+<p align="center">
+  <img width="640" height="360" src="https://github.com/AmarnathMurugan/Raytracing/blob/master/Raytracing%20in%20One%20Weekend/Raytracing/Renders/Output.png">
+</p>
+
+
+Renders from "Ray Tracing the Next Week": 
+
+<p align="center">
+  <img width="640" height="360" src="https://github.com/AmarnathMurugan/Raytracing/blob/master/Raytracing%20the%20Next%20Week/Raytracing/Renders/rtnw_final.png">
+</p>
+
+<p align="center">
+  <img width="480" height="480" src="https://github.com/AmarnathMurugan/Raytracing/blob/master/Raytracing%20the%20Next%20Week/Raytracing/Renders/non%20uniform.png">
+</p>
+
+<p align="center">
+<img width="480" height="240" src="https://raw.githubusercontent.com/AmarnathMurugan/Raytracing/master/Raytracing%20the%20Next%20Week/Raytracing/Renders/Diffuse%20Lights.png">
+</p>
